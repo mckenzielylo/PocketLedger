@@ -39,6 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Budgets
     Route::resource('budgets', BudgetController::class);
+Route::get('/budgets/categories', [BudgetController::class, 'categories'])->name('budgets.categories');
+Route::post('/budgets/copy-from-previous', [BudgetController::class, 'copyFromPrevious'])->name('budgets.copy-from-previous');
     
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

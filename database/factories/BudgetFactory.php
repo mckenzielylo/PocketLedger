@@ -16,8 +16,14 @@ class BudgetFactory extends Factory
      */
     public function definition(): array
     {
+        $year = $this->faker->numberBetween(2020, 2030);
+        $month = $this->faker->numberBetween(1, 12);
+        $monthStr = sprintf('%04d-%02d', $year, $month);
+        
         return [
-            //
+            'user_id' => \App\Models\User::factory(),
+            'month' => $monthStr,
+            'total_limit' => $this->faker->randomFloat(2, 100000, 10000000),
         ];
     }
 }

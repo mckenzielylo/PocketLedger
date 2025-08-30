@@ -31,7 +31,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Account Type</h3>
                 <div class="grid grid-cols-3 gap-3">
-                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none">
+                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none account-type-option" data-type="cash">
                         <input type="radio" name="type" value="cash" class="sr-only" {{ old('type', $account->type) === 'cash' ? 'checked' : '' }}>
                         <div class="flex flex-1">
                             <div class="flex flex-col">
@@ -43,10 +43,10 @@
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">Cash</span>
                             </div>
                         </div>
-                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 {{ old('type', $account->type) === 'cash' ? 'border-primary-500' : 'border-transparent' }}"></div>
+                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent account-type-border"></div>
                     </label>
                     
-                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none">
+                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none account-type-option" data-type="bank">
                         <input type="radio" name="type" value="bank" class="sr-only" {{ old('type', $account->type) === 'bank' ? 'checked' : '' }}>
                         <div class="flex flex-1">
                             <div class="flex flex-col">
@@ -58,10 +58,10 @@
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">Bank</span>
                             </div>
                         </div>
-                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 {{ old('type', $account->type) === 'bank' ? 'border-primary-500' : 'border-transparent' }}"></div>
+                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent account-type-border"></div>
                     </label>
                     
-                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none">
+                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none account-type-option" data-type="e-wallet">
                         <input type="radio" name="type" value="e-wallet" class="sr-only" {{ old('type', $account->type) === 'e-wallet' ? 'checked' : '' }}>
                         <div class="flex flex-1">
                             <div class="flex flex-col">
@@ -73,7 +73,7 @@
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">E-Wallet</span>
                             </div>
                         </div>
-                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 {{ old('type', $account->type) === 'e-wallet' ? 'border-primary-500' : 'border-transparent' }}"></div>
+                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent account-type-border"></div>
                     </label>
                 </div>
                 @error('type')
@@ -172,6 +172,28 @@
 document.addEventListener('DOMContentLoaded', function() {
     const typeInputs = document.querySelectorAll('input[name="type"]');
     const currencySelect = document.getElementById('currency');
+    const accountTypeOptions = document.querySelectorAll('.account-type-option');
+    
+    function updateAccountTypeSelection() {
+        const selectedType = document.querySelector('input[name="type"]:checked')?.value;
+        
+        // Remove all active states
+        accountTypeOptions.forEach(option => {
+            const border = option.querySelector('.account-type-border');
+            border.classList.remove('border-primary-500');
+            border.classList.add('border-transparent');
+        });
+        
+        // Add active state to selected option
+        if (selectedType) {
+            const selectedOption = document.querySelector(`[data-type="${selectedType}"]`);
+            if (selectedOption) {
+                const border = selectedOption.querySelector('.account-type-border');
+                border.classList.remove('border-transparent');
+                border.classList.add('border-primary-500');
+            }
+        }
+    }
     
     function updateCurrencySymbol() {
         const selectedCurrency = currencySelect.value;
@@ -190,13 +212,27 @@ document.addEventListener('DOMContentLoaded', function() {
         balanceInput.previousElementSibling.querySelector('span').textContent = symbol;
     }
     
+    // Handle account type selection
+    accountTypeOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const radioInput = this.querySelector('input[type="radio"]');
+            radioInput.checked = true;
+            updateAccountTypeSelection();
+            updateCurrencySymbol();
+        });
+    });
+    
     typeInputs.forEach(input => {
-        input.addEventListener('change', updateCurrencySymbol);
+        input.addEventListener('change', function() {
+            updateAccountTypeSelection();
+            updateCurrencySymbol();
+        });
     });
     
     currencySelect.addEventListener('change', updateCurrencySymbol);
     
     // Initialize on page load
+    updateAccountTypeSelection();
     updateCurrencySymbol();
 });
 </script>

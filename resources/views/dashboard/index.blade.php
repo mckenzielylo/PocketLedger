@@ -156,7 +156,10 @@
         <!-- Budget Summary -->
         @if($budget)
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Budget ({{ now()->format('M Y') }})</h3>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Budget ({{ now()->format('M Y') }})</h3>
+                <a href="{{ route('budgets.index') }}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">View All</a>
+            </div>
             <div class="space-y-3">
                 @foreach($budget->budgetCategories as $budgetCategory)
                 <div class="space-y-2">

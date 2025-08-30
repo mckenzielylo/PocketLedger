@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Models\Transaction;
 use App\Models\Account;
+use App\Models\Budget;
 use App\Policies\TransactionPolicy;
 use App\Policies\AccountPolicy;
+use App\Policies\BudgetPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -18,6 +20,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Transaction::class => TransactionPolicy::class,
         Account::class => AccountPolicy::class,
+        Budget::class => BudgetPolicy::class,
     ];
 
     /**

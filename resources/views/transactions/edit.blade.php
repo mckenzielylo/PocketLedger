@@ -31,7 +31,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Transaction Type</h3>
                 <div class="grid grid-cols-3 gap-3">
-                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none">
+                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none transaction-type-option" data-type="income">
                         <input type="radio" name="type" value="income" class="sr-only" {{ old('type', $transaction->type) === 'income' ? 'checked' : '' }}>
                         <div class="flex flex-1">
                             <div class="flex flex-col">
@@ -43,10 +43,10 @@
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">Income</span>
                             </div>
                         </div>
-                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 {{ old('type', $transaction->type) === 'income' ? 'border-primary-500' : 'border-transparent' }}"></div>
+                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent transaction-type-border"></div>
                     </label>
                     
-                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none">
+                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none transaction-type-option" data-type="expense">
                         <input type="radio" name="type" value="expense" class="sr-only" {{ old('type', $transaction->type) === 'expense' ? 'checked' : '' }}>
                         <div class="flex flex-1">
                             <div class="flex flex-col">
@@ -58,10 +58,10 @@
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">Expense</span>
                             </div>
                         </div>
-                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 {{ old('type', $transaction->type) === 'expense' ? 'border-primary-500' : 'border-transparent' }}"></div>
+                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent transaction-type-border"></div>
                     </label>
                     
-                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none">
+                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none transaction-type-option" data-type="transfer">
                         <input type="radio" name="type" value="transfer" class="sr-only" {{ old('type', $transaction->type) === 'transfer' ? 'checked' : '' }}>
                         <div class="flex flex-1">
                             <div class="flex flex-col">
@@ -73,7 +73,7 @@
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">Transfer</span>
                             </div>
                         </div>
-                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 {{ old('type', $transaction->type) === 'transfer' ? 'border-primary-500' : 'border-transparent' }}"></div>
+                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent transaction-type-border"></div>
                     </label>
                 </div>
                 @error('type')
@@ -254,6 +254,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const typeInputs = document.querySelectorAll('input[name="type"]');
     const categorySection = document.getElementById('category-section');
     const transferSection = document.getElementById('transfer-section');
+    const transactionTypeOptions = document.querySelectorAll('.transaction-type-option');
+    
+    function updateTransactionTypeSelection() {
+        const selectedType = document.querySelector('input[name="type"]:checked')?.value;
+        
+        // Remove all active states
+        transactionTypeOptions.forEach(option => {
+            const border = option.querySelector('.transaction-type-border');
+            border.classList.remove('border-primary-500');
+            border.classList.add('border-transparent');
+        });
+        
+        // Add active state to selected option
+        if (selectedType) {
+            const selectedOption = document.querySelector(`[data-type="${selectedType}"]`);
+            if (selectedOption) {
+                const border = selectedOption.querySelector('.transaction-type-border');
+                border.classList.remove('border-transparent');
+                border.classList.add('border-primary-500');
+            }
+        }
+    }
     
     function toggleSections() {
         const selectedType = document.querySelector('input[name="type"]:checked')?.value;
@@ -267,11 +289,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Handle transaction type selection
+    transactionTypeOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const radioInput = this.querySelector('input[type="radio"]');
+            radioInput.checked = true;
+            updateTransactionTypeSelection();
+            toggleSections();
+        });
+    });
+    
     typeInputs.forEach(input => {
-        input.addEventListener('change', toggleSections);
+        input.addEventListener('change', function() {
+            updateTransactionTypeSelection();
+            toggleSections();
+        });
     });
     
     // Initialize on page load
+    updateTransactionTypeSelection();
     toggleSections();
 });
 </script>
