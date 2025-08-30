@@ -10,7 +10,10 @@
             <!-- Profile Overview -->
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <div class="max-w-4xl">
-                    @include('profile.partials.profile-overview')
+                    <!-- Temporarily commented out to debug -->
+                    <!-- @include('profile.partials.profile-overview') -->
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Profile Overview</h2>
+                    <p class="text-gray-600 dark:text-gray-400">This section is temporarily disabled for debugging.</p>
                 </div>
             </div>
 
@@ -24,14 +27,20 @@
             <!-- Profile Settings -->
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <div class="max-w-xl">
-                    @include('profile.partials.update-profile-settings-form')
+                    <!-- Temporarily commented out to debug -->
+                    <!-- @include('profile.partials.update-profile-settings-form') -->
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Profile Settings</h2>
+                    <p class="text-gray-600 dark:text-gray-400">This section is temporarily disabled for debugging.</p>
                 </div>
             </div>
 
             <!-- Avatar Management -->
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <div class="max-w-xl">
-                    @include('profile.partials.update-avatar-form')
+                    <!-- Temporarily commented out to debug -->
+                    <!-- @include('profile.partials.update-avatar-form') -->
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Avatar Management</h2>
+                    <p class="text-gray-400">This section is temporarily disabled for debugging.</p>
                 </div>
             </div>
 

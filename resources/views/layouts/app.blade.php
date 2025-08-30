@@ -1,143 +1,138 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'PocketLedger') }}</title>
 
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#3b82f6">
+    <meta name="theme-color" content="#0ea5e9">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="PocketLedger">
-    <meta name="msapplication-TileColor" content="#3b82f6">
-    <meta name="msapplication-tap-highlight" content="no">
-
-    <!-- PWA Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
-    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#3b82f6">
-
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="{{ asset('images/icon-192x192.png') }}">
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
 </head>
-<body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+<body class="font-sans antialiased h-full bg-background-primary">
+    <div class="min-h-full">
+        <!-- Navigation -->
         @include('layouts.navigation')
 
         <!-- Page Heading -->
         @if (isset($header))
-            <header class="bg-white dark:bg-gray-800 shadow">
+            <header class="bg-background-secondary border-b border-neutral-700 shadow-ynab">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                    <h1 class="text-3xl font-bold text-text-primary">
                         {{ $header }}
-                    </h2>
+                    </h1>
                 </div>
             </header>
         @endif
 
         <!-- Page Content -->
-        <main>
-            @yield('content')
+        <main class="bg-background-primary min-h-screen">
+            {{ $slot }}
         </main>
+
+        <!-- Footer -->
+        <footer class="bg-background-secondary border-t border-neutral-700 mt-auto">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between">
+                    <div class="text-text-secondary text-sm">
+                        © {{ date('Y') }} PocketLedger. Built with ❤️ using Laravel & Tailwind.
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="#" class="text-text-secondary hover:text-text-primary transition-colors duration-200">
+                            Privacy Policy
+                        </a>
+                        <a href="#" class="text-text-secondary hover:text-text-primary transition-colors duration-200">
+                            Terms of Service
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <!-- PWA Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
-        }
+    <!-- PWA Install Prompt -->
+    <div id="pwa-install-prompt" class="hidden fixed bottom-4 right-4 bg-background-card border border-neutral-700 rounded-xl shadow-ynab-xl p-4 max-w-sm">
+        <div class="flex items-start space-x-3">
+            <div class="flex-shrink-0">
+                <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-medium text-text-primary">Install PocketLedger</h3>
+                <p class="text-sm text-text-secondary mt-1">Add to your home screen for quick access</p>
+            </div>
+            <button id="pwa-install-btn" class="btn-primary text-xs px-3 py-1.5">
+                Install
+            </button>
+        </div>
+        <button id="pwa-dismiss" class="absolute top-2 right-2 text-text-tertiary hover:text-text-secondary">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
 
-        // PWA Install Prompt
+    <script>
+        // PWA Install Prompt Logic
         let deferredPrompt;
+        const installPrompt = document.getElementById('pwa-install-prompt');
+        const installBtn = document.getElementById('pwa-install-btn');
+        const dismissBtn = document.getElementById('pwa-dismiss');
+
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            
-            // Show install button or banner
-            showInstallPromotion();
+            installPrompt.classList.remove('hidden');
         });
 
-        function showInstallPromotion() {
-            // Create install banner
-            const banner = document.createElement('div');
-            banner.className = 'fixed top-0 left-0 right-0 bg-blue-600 text-white p-4 text-center z-50';
-            banner.innerHTML = `
-                <p class="mb-2">Install PocketLedger for a better experience!</p>
-                <button id="installBtn" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100">
-                    Install App
-                </button>
-                <button id="dismissBtn" class="ml-2 text-blue-100 hover:text-white">
-                    Not now
-                </button>
-            `;
-            
-            document.body.appendChild(banner);
-            
-            // Install button click
-            document.getElementById('installBtn').addEventListener('click', () => {
-                banner.style.display = 'none';
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                    } else {
-                        console.log('User dismissed the install prompt');
-                    }
-                    deferredPrompt = null;
-                });
-            });
-            
-            // Dismiss button click
-            document.getElementById('dismissBtn').addEventListener('click', () => {
-                banner.style.display = 'none';
-            });
-        }
-
-        // Offline/Online detection
-        window.addEventListener('online', () => {
-            document.body.classList.remove('offline');
-            showNotification('You are back online!', 'success');
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installPrompt.classList.add('hidden');
+                }
+                deferredPrompt = null;
+            }
         });
 
-        window.addEventListener('offline', () => {
-            document.body.classList.add('offline');
-            showNotification('You are offline. Some features may not work.', 'warning');
+        dismissBtn.addEventListener('click', () => {
+            installPrompt.classList.add('hidden');
         });
-
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
-                type === 'success' ? 'bg-green-500 text-white' :
-                type === 'warning' ? 'bg-yellow-500 text-white' :
-                'bg-blue-500 text-white'
-            }`;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
     </script>
 </body>
 </html>
