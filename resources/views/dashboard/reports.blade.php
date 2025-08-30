@@ -139,7 +139,7 @@ new Chart(cashflowCtx, {
                 beginAtZero: true,
                 ticks: {
                     callback: function(value) {
-                        return 'IDR ' + new Intl.NumberFormat('id-ID').format(value);
+                        return '{{ Auth::user()->preferred_currency_symbol }} ' + new Intl.NumberFormat('id-ID').format(value);
                     }
                 }
             }
@@ -148,7 +148,7 @@ new Chart(cashflowCtx, {
             tooltip: {
                 callbacks: {
                     label: function(context) {
-                        return context.dataset.label + ': IDR ' + new Intl.NumberFormat('id-ID').format(context.parsed.y);
+                        return context.dataset.label + ': {{ Auth::user()->preferred_currency_symbol }} ' + new Intl.NumberFormat('id-ID').format(context.parsed.y);
                     }
                 }
             }
@@ -178,7 +178,7 @@ new Chart(categoryCtx, {
                     label: function(context) {
                         const total = context.dataset.data.reduce((a, b) => a + b, 0);
                         const percentage = ((context.parsed / total) * 100).toFixed(1);
-                        return context.label + ': IDR ' + new Intl.NumberFormat('id-ID').format(context.parsed) + ' (' + percentage + '%)';
+                        return context.label + ': {{ Auth::user()->preferred_currency_symbol }} ' + new Intl.NumberFormat('id-ID').format(context.parsed) + ' (' + percentage + '%)';
                     }
                 }
             }
@@ -210,7 +210,7 @@ new Chart(netWorthCtx, {
                 beginAtZero: false,
                 ticks: {
                     callback: function(value) {
-                        return 'IDR ' + new Intl.NumberFormat('id-ID').format(value);
+                        return '{{ Auth::user()->preferred_currency_symbol }} ' + new Intl.NumberFormat('id-ID').format(value);
                     }
                 }
             }
@@ -219,7 +219,7 @@ new Chart(netWorthCtx, {
             tooltip: {
                 callbacks: {
                     label: function(context) {
-                        return 'Net Worth: IDR ' + new Intl.NumberFormat('id-ID').format(context.parsed.y);
+                        return 'Net Worth: {{ Auth::user()->preferred_currency_symbol }} ' + new Intl.NumberFormat('id-ID').format(context.parsed.y);
                     }
                 }
             }
