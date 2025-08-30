@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6" x-data="{ openSection: null }">
             <!-- Profile Overview Card -->
             <div class="card">
                 <div class="card-header">
@@ -37,18 +37,18 @@
             </div>
 
             <!-- Personal Information Section -->
-            <div class="card" x-data="{ open: false }">
-                <div class="card-header cursor-pointer" @click="open = !open">
+            <div class="card">
+                <div class="card-header cursor-pointer" @click="openSection = openSection === 'personal' ? null : 'personal'">
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold text-text-primary">Personal Information</h3>
                         <svg class="w-4 h-4 text-text-secondary transition-transform duration-200" 
-                             :class="{ 'rotate-180': open }"
+                             :class="{ 'rotate-180': openSection === 'personal' }"
                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </div>
                 </div>
-                <div class="card-body py-4" x-show="open" x-transition:enter="transition ease-out duration-200" 
+                <div class="card-body py-4" x-show="openSection === 'personal'" x-transition:enter="transition ease-out duration-200" 
                      x-transition:enter-start="opacity-0 transform -translate-y-2" 
                      x-transition:enter-end="opacity-100 transform translate-y-0">
                     @include('profile.partials.update-profile-information-form')
@@ -56,18 +56,18 @@
             </div>
 
             <!-- Profile Settings Section -->
-            <div class="card" x-data="{ open: false }">
-                <div class="card-header cursor-pointer" @click="open = !open">
+            <div class="card">
+                <div class="card-header cursor-pointer" @click="openSection = openSection === 'settings' ? null : 'settings'">
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold text-text-primary">Profile Settings</h3>
                         <svg class="w-4 h-4 text-text-secondary transition-transform duration-200" 
-                             :class="{ 'rotate-180': open }"
+                             :class="{ 'rotate-180': openSection === 'settings' }"
                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </div>
                 </div>
-                <div class="card-body py-4" x-show="open" x-transition:enter="transition ease-out duration-200" 
+                <div class="card-body py-4" x-show="openSection === 'settings'" x-transition:enter="transition ease-out duration-200" 
                      x-transition:enter-start="opacity-0 transform -translate-y-2" 
                      x-transition:enter-end="opacity-100 transform translate-y-0">
                     @include('profile.partials.update-profile-settings-form')
@@ -75,18 +75,18 @@
             </div>
 
             <!-- Avatar Management Section -->
-            <div class="card" x-data="{ open: false }">
-                <div class="card-header cursor-pointer" @click="open = !open">
+            <div class="card">
+                <div class="card-header cursor-pointer" @click="openSection = openSection === 'avatar' ? null : 'avatar'">
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold text-text-primary">Avatar Management</h3>
                         <svg class="w-4 h-4 text-text-secondary transition-transform duration-200" 
-                             :class="{ 'rotate-180': open }"
+                             :class="{ 'rotate-180': openSection === 'avatar' }"
                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </div>
                 </div>
-                <div class="card-body py-4" x-show="open" x-transition:enter="transition ease-out duration-200" 
+                <div class="card-body py-4" x-show="openSection === 'avatar'" x-transition:enter="transition ease-out duration-200" 
                      x-transition:enter-start="opacity-0 transform -translate-y-2" 
                      x-transition:enter-end="opacity-100 transform translate-y-0">
                     @include('profile.partials.update-avatar-form')
@@ -94,18 +94,18 @@
             </div>
 
             <!-- Password Management Section -->
-            <div class="card" x-data="{ open: false }">
-                <div class="card-header cursor-pointer" @click="open = !open">
+            <div class="card">
+                <div class="card-header cursor-pointer" @click="openSection = openSection === 'password' ? null : 'password'">
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold text-text-primary">Password Management</h3>
                         <svg class="w-4 h-4 text-text-secondary transition-transform duration-200" 
-                             :class="{ 'rotate-180': open }"
+                             :class="{ 'rotate-180': openSection === 'password' }"
                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </div>
                 </div>
-                <div class="card-body py-4" x-show="open" x-transition:enter="transition ease-out duration-200" 
+                <div class="card-body py-4" x-show="openSection === 'password'" x-transition:enter="transition ease-out duration-200" 
                      x-transition:enter-start="opacity-0 transform -translate-y-2" 
                      x-transition:enter-end="opacity-100 transform translate-y-0">
                     @include('profile.partials.update-password-form')
@@ -113,18 +113,18 @@
             </div>
 
             <!-- Account Management Section -->
-            <div class="card" x-data="{ open: false }">
-                <div class="card-header cursor-pointer" @click="open = !open">
+            <div class="card">
+                <div class="card-header cursor-pointer" @click="openSection = openSection === 'account' ? null : 'account'">
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold text-danger-400">Account Management</h3>
                         <svg class="w-4 h-4 text-text-secondary transition-transform duration-200" 
-                             :class="{ 'rotate-180': open }"
+                             :class="{ 'rotate-180': openSection === 'account' }"
                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </div>
                 </div>
-                <div class="card-body py-4" x-show="open" x-transition:enter="transition ease-out duration-200" 
+                <div class="card-body py-4" x-show="openSection === 'account'" x-transition:enter="transition ease-out duration-200" 
                      x-transition:enter-start="opacity-0 transform -translate-y-2" 
                      x-transition:enter-end="opacity-100 transform translate-y-0">
                     @include('profile.partials.delete-user-form')
