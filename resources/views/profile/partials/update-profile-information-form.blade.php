@@ -47,6 +47,27 @@
             @endif
         </div>
 
+        <!-- Phone Number -->
+        <div>
+            <x-input-label for="phone" :value="__('Phone Number (Optional)')" />
+            <x-text-input id="phone" name="phone" type="tel" class="mt-1 block w-full" :value="old('phone', $user->settings['phone'] ?? '')" autocomplete="tel" />
+            <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+        </div>
+
+        <!-- Date of Birth -->
+        <div>
+            <x-input-label for="birth_date" :value="__('Date of Birth (Optional)')" />
+            <x-text-input id="birth_date" name="birth_date" type="date" class="mt-1 block w-full" :value="old('birth_date', $user->settings['birth_date'] ?? '')" />
+            <x-input-error class="mt-2" :messages="$errors->get('birth_date')" />
+        </div>
+
+        <!-- Bio -->
+        <div>
+            <x-input-label for="bio" :value="__('Bio (Optional)')" />
+            <textarea id="bio" name="bio" rows="3" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Tell us a bit about yourself...">{{ old('bio', $user->settings['bio'] ?? '') }}</textarea>
+            <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
