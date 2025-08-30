@@ -63,14 +63,14 @@
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-400">Amount</p>
             <p class="text-lg font-semibold text-gray-900 dark:text-white">
-                IDR {{ number_format($debt->amount, 0, ',', '.') }}
+                {{ Auth::user()->preferred_currency_symbol }} {{ number_format($debt->amount, 0, ',', '.') }}
             </p>
         </div>
         
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-400">Paid</p>
             <p class="text-lg font-semibold text-green-600 dark:text-green-400">
-                IDR {{ number_format($debt->payments->sum('amount'), 0, ',', '.') }}
+                {{ Auth::user()->preferred_currency_symbol }} {{ number_format($debt->payments->sum('amount'), 0, ',', '.') }}
             </p>
         </div>
         
@@ -79,7 +79,7 @@
             <p class="text-lg font-semibold 
                 @if($debt->payments->sum('amount') >= $debt->amount) text-green-600 dark:text-green-400
                 @else text-yellow-600 dark:text-yellow-400 @endif">
-                IDR {{ number_format($debt->amount - $debt->payments->sum('amount'), 0, ',', '.') }}
+                {{ Auth::user()->preferred_currency_symbol }} {{ number_format($debt->amount - $debt->payments->sum('amount'), 0, ',', '.') }}
             </p>
         </div>
         

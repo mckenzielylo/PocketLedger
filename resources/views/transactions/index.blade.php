@@ -97,7 +97,7 @@
                             <!-- Amount -->
                             <div class="flex-shrink-0 text-right">
                                 <p class="text-lg font-semibold {{ $transaction->type === 'income' ? 'text-green-600 dark:text-green-400' : ($transaction->type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400') }}">
-                                    {{ $transaction->type === 'expense' ? '-' : '' }}{{ number_format($transaction->amount, 0, ',', '.') }}
+                                    {{ $transaction->type === 'expense' ? '-' : '' }}{{ $transaction->account->currency_symbol ?? Auth::user()->preferred_currency_symbol }} {{ number_format($transaction->amount, 0, ',', '.') }}
                                 </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ $transaction->account->currency }}</p>
                             </div>

@@ -85,7 +85,7 @@
                                     
                                     <div class="text-right">
                                         <div class="text-lg font-semibold text-gray-900 dark:text-white">
-                                            IDR {{ number_format($budgetCategory->spending, 0, ',', '.') }} / {{ number_format($budgetCategory->limit_amount, 0, ',', '.') }}
+                                            {{ Auth::user()->preferred_currency_symbol }} {{ number_format($budgetCategory->spending, 0, ',', '.') }} / {{ number_format($budgetCategory->limit_amount, 0, ',', '.') }}
                                         </div>
                                         <div class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ number_format($budgetCategory->percentage, 1) }}% used
@@ -122,11 +122,11 @@
                                     <div class="text-sm text-gray-500 dark:text-gray-400">
                                         @if($budgetCategory->remaining > 0)
                                             <span class="text-green-600 dark:text-green-400">
-                                                IDR {{ number_format($budgetCategory->remaining, 0, ',', '.') }} remaining
+                                                {{ Auth::user()->preferred_currency_symbol }} {{ number_format($budgetCategory->remaining, 0, ',', '.') }} remaining
                                             </span>
                                         @else
                                             <span class="text-red-600 dark:text-red-400">
-                                                IDR {{ number_format(abs($budgetCategory->remaining), 0, ',', '.') }} over budget
+                                                {{ Auth::user()->preferred_currency_symbol }} {{ number_format(abs($budgetCategory->remaining), 0, ',', '.') }} over budget
                                             </span>
                                         @endif
                                     </div>
