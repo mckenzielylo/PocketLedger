@@ -37,8 +37,10 @@
             </div>
 
             <!-- Personal Information Section -->
-            <div class="card">
-                <div class="card-header cursor-pointer" @click="openSection = openSection === 'personal' ? null : 'personal'">
+            <div class="card" :class="{ 'collapsed': openSection !== 'personal' }">
+                <div class="card-header cursor-pointer" 
+                     :class="{ 'collapsed': openSection !== 'personal' }"
+                     @click="openSection = openSection === 'personal' ? null : 'personal'">
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold text-text-primary">Personal Information</h3>
                         <svg class="w-4 h-4 text-text-secondary transition-transform duration-200" 
@@ -56,8 +58,10 @@
             </div>
 
             <!-- Profile Settings Section -->
-            <div class="card">
-                <div class="card-header cursor-pointer" @click="openSection = openSection === 'settings' ? null : 'settings'">
+            <div class="card" :class="{ 'collapsed': openSection !== 'settings' }">
+                <div class="card-header cursor-pointer" 
+                     :class="{ 'collapsed': openSection !== 'settings' }"
+                     @click="openSection = openSection === 'settings' ? null : 'settings'">
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold text-text-primary">Profile Settings</h3>
                         <svg class="w-4 h-4 text-text-secondary transition-transform duration-200" 
@@ -75,8 +79,10 @@
             </div>
 
             <!-- Avatar Management Section -->
-            <div class="card">
-                <div class="card-header cursor-pointer" @click="openSection = openSection === 'avatar' ? null : 'avatar'">
+            <div class="card" :class="{ 'collapsed': openSection !== 'avatar' }">
+                <div class="card-header cursor-pointer" 
+                     :class="{ 'collapsed': openSection !== 'avatar' }"
+                     @click="openSection = openSection === 'avatar' ? null : 'avatar'">
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold text-text-primary">Avatar Management</h3>
                         <svg class="w-4 h-4 text-text-secondary transition-transform duration-200" 
@@ -94,8 +100,10 @@
             </div>
 
             <!-- Password Management Section -->
-            <div class="card">
-                <div class="card-header cursor-pointer" @click="openSection = openSection === 'password' ? null : 'password'">
+            <div class="card" :class="{ 'collapsed': openSection !== 'password' }">
+                <div class="card-header cursor-pointer" 
+                     :class="{ 'collapsed': openSection !== 'password' }"
+                     @click="openSection = openSection === 'password' ? null : 'password'">
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold text-text-primary">Password Management</h3>
                         <svg class="w-4 h-4 text-text-secondary transition-transform duration-200" 
@@ -113,8 +121,10 @@
             </div>
 
             <!-- Account Management Section -->
-            <div class="card">
-                <div class="card-header cursor-pointer" @click="openSection = openSection === 'account' ? null : 'account'">
+            <div class="card" :class="{ 'collapsed': openSection !== 'account' }">
+                <div class="card-header cursor-pointer" 
+                     :class="{ 'collapsed': openSection !== 'account' }"
+                     @click="openSection = openSection === 'account' ? null : 'account'">
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold text-danger-400">Account Management</h3>
                         <svg class="w-4 h-4 text-text-secondary transition-transform duration-200" 

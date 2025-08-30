@@ -87,12 +87,20 @@
     
     /* YNAB-style card components */
     .card {
-        @apply bg-background-card border border-neutral-700 rounded-xl shadow-ynab;
-        margin-bottom: 0; /* Remove default margin to prevent overlap */
+        @apply bg-card border border-border rounded-lg shadow-sm;
+        margin-bottom: 0;
+    }
+
+    .card.collapsed {
+        border-bottom: none;
     }
     
     .card-header {
-        @apply px-6 py-4 border-b border-neutral-700;
+        @apply px-6 py-4 border-b border-border;
+    }
+
+    .card-header.collapsed {
+        border-bottom: none;
     }
     
     .card-body {
