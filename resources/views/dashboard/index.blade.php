@@ -26,7 +26,7 @@
                             </svg>
                         </div>
                         <h3 class="text-sm font-medium text-white/80 mb-1">Total Balance</h3>
-                        <p class="text-2xl font-bold">${{ number_format($totalBalance, 2) }}</p>
+                        <p class="text-2xl font-bold">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($totalBalance, 2) }}</p>
                         <div class="mt-2 text-sm text-white/70">
                             Across {{ $accounts->count() }} accounts
                         </div>
@@ -42,7 +42,7 @@
                             </svg>
                         </div>
                         <h3 class="text-sm font-medium text-white/80 mb-1">Monthly Income</h3>
-                        <p class="text-2xl font-bold">${{ number_format($monthlyIncome, 2) }}</p>
+                        <p class="text-2xl font-bold">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($monthlyIncome, 2) }}</p>
                         <div class="mt-2 text-sm text-white/70">
                             This month
                         </div>
@@ -58,7 +58,7 @@
                             </svg>
                         </div>
                         <h3 class="text-sm font-medium text-white/80 mb-1">Monthly Expenses</h3>
-                        <p class="text-2xl font-bold">${{ number_format($monthlyExpenses, 2) }}</p>
+                        <p class="text-2xl font-bold">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($monthlyExpenses, 2) }}</p>
                         <div class="mt-2 text-sm text-white/70">
                             This month
                         </div>
@@ -74,7 +74,7 @@
                             </svg>
                         </div>
                         <h3 class="text-sm font-medium text-white/80 mb-1">Net Worth</h3>
-                        <p class="text-2xl font-bold">${{ number_format($netWorth, 2) }}</p>
+                        <p class="text-2xl font-bold">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($netWorth, 2) }}</p>
                         <div class="mt-2 text-sm text-white/70">
                             Total assets
                         </div>
@@ -147,7 +147,7 @@
                                             </div>
                                         </div>
                                         <div class="text-right">
-                                            <p class="font-semibold text-text-primary">${{ number_format($account->current_balance, 2) }}</p>
+                                            <p class="font-semibold text-text-primary">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($account->current_balance, 2) }}</p>
                                             <p class="text-sm text-text-secondary">{{ $account->currency }}</p>
                                         </div>
                                     </div>
@@ -196,7 +196,7 @@
                                         </div>
                                         <div class="text-right">
                                             <p class="text-sm font-semibold {{ $transaction->isIncome ? 'text-success-400' : 'text-warning-400' }}">
-                                                {{ $transaction->isIncome ? '+' : '-' }}${{ number_format($transaction->amount, 2) }}
+                                                {{ $transaction->isIncome ? '+' : '-' }}{{ Auth::user()->preferred_currency_symbol }}{{ number_format($transaction->amount, 2) }}
                                             </p>
                                             <p class="text-xs text-text-secondary">{{ $transaction->occurred_on->format('M j') }}</p>
                                         </div>
@@ -231,7 +231,7 @@
                                         <div class="space-y-2">
                                             <div class="flex items-center justify-between">
                                                 <span class="text-sm font-medium text-text-primary">{{ $budget->month }}</span>
-                                                <span class="text-sm text-text-secondary">${{ number_format($budget->total_spent, 2) }} / ${{ number_format($budget->total_limit, 2) }}</span>
+                                                <span class="text-sm text-text-secondary">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($budget->total_spent, 2) }} / {{ Auth::user()->preferred_currency_symbol }}{{ number_format($budget->total_limit, 2) }}</span>
                                             </div>
                                             <div class="w-full bg-neutral-700 rounded-full h-2">
                                                 <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" 

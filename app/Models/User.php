@@ -114,6 +114,34 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's preferred currency.
+     */
+    public function getPreferredCurrencyAttribute(): string
+    {
+        return $this->settings['currency'] ?? 'IDR';
+    }
+
+    /**
+     * Get the user's preferred currency symbol.
+     */
+    public function getPreferredCurrencySymbolAttribute(): string
+    {
+        $currency = $this->preferred_currency;
+        
+        return match ($currency) {
+            'IDR' => 'Rp',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            'SGD' => 'S$',
+            'MYR' => 'RM',
+            'THB' => '฿',
+            default => $currency,
+        };
+    }
+
+    /**
      * Get the user's default account.
      */
     public function defaultAccount()
