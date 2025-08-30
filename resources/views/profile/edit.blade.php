@@ -1,59 +1,132 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-xl text-text-primary leading-tight">
             {{ __('Profile') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <!-- Profile Overview -->
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-4xl">
-                    <!-- Temporarily commented out to debug -->
-                    <!-- @include('profile.partials.profile-overview') -->
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Profile Overview</h2>
-                    <p class="text-gray-600 dark:text-gray-400">This section is temporarily disabled for debugging.</p>
+    <div class="py-8">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <!-- Profile Overview Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-xl font-semibold text-text-primary">Profile Overview</h3>
+                </div>
+                <div class="card-body">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            @if(Auth::user()->settings['avatar'] ?? false)
+                                <img class="w-20 h-20 rounded-full object-cover border-4 border-primary-200 dark:border-primary-700 shadow-lg"
+                                     src="{{ Storage::url(Auth::user()->settings['avatar']) }}"
+                                     alt="{{ Auth::user()->name }}'s avatar">
+                            @else
+                                <div class="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center text-white text-3xl font-bold border-4 border-primary-200 dark:border-primary-700 shadow-lg">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </div>
+                            @endif
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-2xl font-bold text-text-primary">{{ Auth::user()->name }}</h4>
+                            <p class="text-text-secondary">{{ Auth::user()->email }}</p>
+                            <p class="text-sm text-primary-400 mt-1">
+                                Member since {{ Auth::user()->created_at->format('M Y') }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Profile Information -->
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
+            <!-- Personal Information Section -->
+            <div class="card" x-data="{ open: false }">
+                <div class="card-header cursor-pointer" @click="open = !open">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-text-primary">Personal Information</h3>
+                        <svg class="w-5 h-5 text-text-secondary transition-transform duration-200" 
+                             :class="{ 'rotate-180': open }"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-body" x-show="open" x-transition:enter="transition ease-out duration-200" 
+                     x-transition:enter-start="opacity-0 transform -translate-y-2" 
+                     x-transition:enter-end="opacity-100 transform translate-y-0">
                     @include('profile.partials.update-profile-information-form')
                 </div>
             </div>
 
-            <!-- Profile Settings -->
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <!-- Temporarily commented out to debug -->
-                    <!-- @include('profile.partials.update-profile-settings-form') -->
-                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Profile Settings</h2>
-                    <p class="text-gray-600 dark:text-gray-400">This section is temporarily disabled for debugging.</p>
+            <!-- Profile Settings Section -->
+            <div class="card" x-data="{ open: false }">
+                <div class="card-header cursor-pointer" @click="open = !open">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-text-primary">Profile Settings</h3>
+                        <svg class="w-5 h-5 text-text-secondary transition-transform duration-200" 
+                             :class="{ 'rotate-180': open }"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-body" x-show="open" x-transition:enter="transition ease-out duration-200" 
+                     x-transition:enter-start="opacity-0 transform -translate-y-2" 
+                     x-transition:enter-end="opacity-100 transform translate-y-0">
+                    @include('profile.partials.update-profile-settings-form')
                 </div>
             </div>
 
-            <!-- Avatar Management -->
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <!-- Temporarily commented out to debug -->
-                    <!-- @include('profile.partials.update-avatar-form') -->
-                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Avatar Management</h2>
-                    <p class="text-gray-400">This section is temporarily disabled for debugging.</p>
+            <!-- Avatar Management Section -->
+            <div class="card" x-data="{ open: false }">
+                <div class="card-header cursor-pointer" @click="open = !open">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-text-primary">Avatar Management</h3>
+                        <svg class="w-5 h-5 text-text-secondary transition-transform duration-200" 
+                             :class="{ 'rotate-180': open }"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-body" x-show="open" x-transition:enter="transition ease-out duration-200" 
+                     x-transition:enter-start="opacity-0 transform -translate-y-2" 
+                     x-transition:enter-end="opacity-100 transform translate-y-0">
+                    @include('profile.partials.update-avatar-form')
                 </div>
             </div>
 
-            <!-- Update Password -->
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
+            <!-- Password Management Section -->
+            <div class="card" x-data="{ open: false }">
+                <div class="card-header cursor-pointer" @click="open = !open">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-text-primary">Password Management</h3>
+                        <svg class="w-5 h-5 text-text-secondary transition-transform duration-200" 
+                             :class="{ 'rotate-180': open }"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-body" x-show="open" x-transition:enter="transition ease-out duration-200" 
+                     x-transition:enter-start="opacity-0 transform -translate-y-2" 
+                     x-transition:enter-end="opacity-100 transform translate-y-0">
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
 
-            <!-- Delete Account -->
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
+            <!-- Account Management Section -->
+            <div class="card" x-data="{ open: false }">
+                <div class="card-header cursor-pointer" @click="open = !open">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-danger-400">Account Management</h3>
+                        <svg class="w-5 h-5 text-text-secondary transition-transform duration-200" 
+                             :class="{ 'rotate-180': open }"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-body" x-show="open" x-transition:enter="transition ease-out duration-200" 
+                     x-transition:enter-start="opacity-0 transform -translate-y-2" 
+                     x-transition:enter-end="opacity-100 transform translate-y-0">
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
