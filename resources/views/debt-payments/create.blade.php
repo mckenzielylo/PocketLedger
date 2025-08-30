@@ -67,7 +67,7 @@
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 dark:text-gray-400 sm:text-sm">$</span>
+                            <span class="text-gray-500 dark:text-gray-400 sm:text-sm">{{ Auth::user()->preferred_currency_symbol }}</span>
                         </div>
                         <input type="number" 
                                name="amount" 

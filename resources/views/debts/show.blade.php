@@ -49,14 +49,14 @@
                         <div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">Original Amount</p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
-                                IDR {{ number_format($debt->amount, 0, ',', '.') }}
+                                {{ Auth::user()->preferred_currency_symbol }} {{ number_format($debt->amount, 0, ',', '.') }}
                             </p>
                         </div>
                         
                         <div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">Total Paid</p>
                             <p class="text-2xl font-bold text-green-600 dark:text-green-400">
-                                IDR {{ number_format($totalPaid, 0, ',', '.') }}
+                                {{ Auth::user()->preferred_currency_symbol }} {{ number_format($totalPaid, 0, ',', '.') }}
                             </p>
                         </div>
                         
@@ -65,7 +65,7 @@
                             <p class="text-2xl font-bold 
                                 @if($remainingAmount <= 0) text-green-600 dark:text-green-400
                                 @else text-yellow-600 dark:text-yellow-400 @endif">
-                                IDR {{ number_format($remainingAmount, 0, ',', '.') }}
+                                {{ Auth::user()->preferred_currency_symbol }} {{ number_format($remainingAmount, 0, ',', '.') }}
                             </p>
                         </div>
                         
@@ -118,7 +118,7 @@
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Interest Rate</p>
                                 <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $debt->interest_rate }}% per year</p>
                                 @if($totalInterest > 0)
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Accumulated: IDR {{ number_format($totalInterest, 0, ',', '.') }}</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Accumulated: {{ Auth::user()->preferred_currency_symbol }} {{ number_format($totalInterest, 0, ',', '.') }}</p>
                                 @endif
                             </div>
                         @endif
@@ -184,7 +184,7 @@
                                 <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                     <div>
                                         <p class="font-medium text-gray-900 dark:text-white">
-                                            IDR {{ number_format($payment->amount, 0, ',', '.') }}
+                                            {{ Auth::user()->preferred_currency_symbol }} {{ number_format($payment->amount, 0, ',', '.') }}
                                         </p>
                                         <p class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ $payment->payment_date->format('M d, Y') }}
@@ -295,7 +295,7 @@
                     <label for="payment_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Amount</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 dark:text-gray-400 sm:text-sm">IDR</span>
+                            <span class="text-gray-500 dark:text-gray-400 sm:text-sm">{{ Auth::user()->preferred_currency_symbol }}</span>
                         </div>
                         <input type="number" name="amount" id="payment_amount" step="0.01" min="0.01" max="{{ $remainingAmount }}" required
                             class="block w-full pl-12 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"

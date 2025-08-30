@@ -49,7 +49,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Debt</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">IDR {{ number_format($totalDebt, 0, ',', '.') }}</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ Auth::user()->preferred_currency_symbol }} {{ number_format($totalDebt, 0, ',', '.') }}</p>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Paid</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">IDR {{ number_format($totalPaid, 0, ',', '.') }}</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ Auth::user()->preferred_currency_symbol }} {{ number_format($totalPaid, 0, ',', '.') }}</p>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Remaining</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">IDR {{ number_format($totalRemaining, 0, ',', '.') }}</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ Auth::user()->preferred_currency_symbol }} {{ number_format($totalRemaining, 0, ',', '.') }}</p>
                     </div>
                 </div>
             </div>
