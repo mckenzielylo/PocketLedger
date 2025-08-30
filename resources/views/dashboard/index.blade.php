@@ -71,7 +71,10 @@
 
         <!-- Accounts Summary -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Accounts</h3>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Accounts</h3>
+                <a href="{{ route('accounts.index') }}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">View All</a>
+            </div>
             <div class="space-y-3">
                 @foreach($accounts as $account)
                 <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">

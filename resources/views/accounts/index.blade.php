@@ -1,0 +1,164 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="px-4 py-4 sm:px-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Accounts</h1>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage your bank accounts, cash, and e-wallets</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <a href="{{ route('accounts.create') }}" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account List -->
+    <div class="px-4 py-6 sm:px-6">
+        @if($accounts->count() > 0)
+            <div class="space-y-4">
+                @foreach($accounts as $account)
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <!-- Account Type Icon -->
+                                <div class="flex-shrink-0">
+                                    @if($account->type === 'cash')
+                                        <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                            </svg>
+                                        </div>
+                                    @elseif($account->type === 'bank')
+                                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                            </svg>
+                                        </div>
+                                    @else
+                                        <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </div>
+                                
+                                <!-- Account Info -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center space-x-2">
+                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ $account->name }}</h3>
+                                        @if($account->is_archived)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                                Archived
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                                        <span class="capitalize">{{ $account->type }}</span>
+                                        <span>•</span>
+                                        <span>{{ $account->currency }}</span>
+                                        @if($account->transactions_count > 0)
+                                            <span>•</span>
+                                            <span>{{ $account->transactions_count }} transactions</span>
+                                        @endif
+                                    </div>
+                                    @if($account->note)
+                                        <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">{{ $account->note }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <!-- Balance and Actions -->
+                            <div class="flex flex-col items-end space-y-3">
+                                <div class="text-right">
+                                    <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                                        {{ number_format($account->current_balance, 0, ',', '.') }}
+                                    </p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $account->currency }}</p>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="flex items-center space-x-2">
+                                    @if(!$account->is_archived)
+                                        <form action="{{ route('accounts.default', $account) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" 
+                                                    class="text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                                Set Default
+                                            </button>
+                                        </form>
+                                    @endif
+                                    
+                                    <a href="{{ route('accounts.edit', $account) }}" 
+                                       class="text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        Edit
+                                    </a>
+                                    
+                                    <form action="{{ route('accounts.archive', $account) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" 
+                                                class="text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                            {{ $account->is_archived ? 'Activate' : 'Archive' }}
+                                        </button>
+                                    </form>
+                                    
+                                    @if($account->transactions_count === 0 && $account->transfer_transactions_count === 0)
+                                        <form action="{{ route('accounts.destroy', $account) }}" method="POST" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="text-xs px-2 py-1 border border-red-300 dark:border-red-600 rounded text-red-700 dark:text-red-300 bg-white dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900"
+                                                    onclick="return confirm('Are you sure you want to delete this account? This action cannot be undone.')">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <!-- Empty State -->
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No accounts</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating your first account.</p>
+                <div class="mt-6">
+                    <a href="{{ route('accounts.create') }}" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Account
+                    </a>
+                </div>
+            </div>
+        @endif
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<div class="fixed bottom-20 right-4 z-50">
+    <a href="{{ route('accounts.create') }}" 
+       class="w-14 h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg flex items-center justify-center transition-colors duration-200">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+    </a>
+</div>
+@endsection

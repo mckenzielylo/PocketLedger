@@ -24,6 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Accounts
     Route::resource('accounts', AccountController::class);
+    Route::post('/accounts/{account}/archive', [AccountController::class, 'toggleArchive'])->name('accounts.archive');
+    Route::post('/accounts/{account}/default', [AccountController::class, 'setDefault'])->name('accounts.default');
     
     // Categories
     Route::resource('categories', CategoryController::class);
