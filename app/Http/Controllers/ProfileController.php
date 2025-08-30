@@ -20,17 +20,29 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         
-        // Get user statistics
-        $stats = [
-            'accounts' => $user->accounts()->count(),
-            'transactions' => $user->transactions()->count(),
-            'categories' => $user->categories()->count(),
-            'budgets' => $user->budgets()->count(),
-            'debts' => $user->debts()->count(),
-            'assets' => $user->assets()->count(),
-        ];
+        // Get user statistics with error handling
+        try {
+            $stats = [
+                'accounts' => $user->accounts()->count(),
+                'transactions' => $user->transactions()->count(),
+                'categories' => $user->categories()->count(),
+                'budgets' => $user->budgets()->count(),
+                'debts' => $user->debts()->count(),
+                'assets' => $user->assets()->count(),
+            ];
+        } catch (\Exception $e) {
+            // Fallback to default stats if there's an error
+            $stats = [
+                'accounts' => 0,
+                'transactions' => 0,
+                'categories' => 0,
+                'budgets' => 0,
+                'debts' => 0,
+                'assets' => 0,
+            ];
+        }
         
-        return view('profile.edit', [
+        return view('profile.simple', [
             'user' => $user,
             'stats' => $stats,
         ]);

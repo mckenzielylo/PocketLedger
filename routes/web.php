@@ -55,6 +55,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/debug', function() { return view('profile.partials.profile-overview', ['user' => \Illuminate\Support\Facades\Auth::user(), 'stats' => ['accounts' => 2, 'transactions' => 4, 'categories' => 6, 'budgets' => 1, 'debts' => 1, 'assets' => 2]]); })->name('profile.debug');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/settings', [ProfileController::class, 'updateSettings'])->name('profile.settings');
     Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
