@@ -154,6 +154,30 @@ class Transaction extends Model
     }
 
     /**
+     * Accessor for isIncome property.
+     */
+    public function getIsIncomeAttribute(): bool
+    {
+        return $this->isIncome();
+    }
+
+    /**
+     * Accessor for isExpense property.
+     */
+    public function getIsExpenseAttribute(): bool
+    {
+        return $this->isExpense();
+    }
+
+    /**
+     * Accessor for isTransfer property.
+     */
+    public function getIsTransferAttribute(): bool
+    {
+        return $this->isTransfer();
+    }
+
+    /**
      * Get the formatted amount with currency.
      */
     public function getFormattedAmountAttribute(): string
