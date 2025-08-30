@@ -134,4 +134,12 @@ class Debt extends Model
     {
         return $this->total_paid >= $this->amount;
     }
+
+    /**
+     * Get the current balance (remaining amount) for the debt.
+     */
+    public function getCurrentBalanceAttribute(): float
+    {
+        return $this->remaining_amount;
+    }
 }
