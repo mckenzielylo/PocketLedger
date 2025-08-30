@@ -88,6 +88,7 @@
     /* YNAB-style card components */
     .card {
         @apply bg-background-card border border-neutral-700 rounded-xl shadow-ynab;
+        margin-bottom: 0; /* Remove default margin to prevent overlap */
     }
     
     .card-header {
