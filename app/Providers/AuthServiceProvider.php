@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Models\Transaction;
 use App\Models\Account;
 use App\Models\Budget;
+use App\Models\Category;
 use App\Policies\TransactionPolicy;
 use App\Policies\AccountPolicy;
 use App\Policies\BudgetPolicy;
+use App\Policies\CategoryPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -21,6 +23,7 @@ class AuthServiceProvider extends ServiceProvider
         Transaction::class => TransactionPolicy::class,
         Account::class => AccountPolicy::class,
         Budget::class => BudgetPolicy::class,
+        Category::class => CategoryPolicy::class,
     ];
 
     /**

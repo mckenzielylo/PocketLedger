@@ -37,10 +37,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Assets
     Route::resource('assets', AssetController::class);
     
+        // Categories
+    Route::resource('categories', CategoryController::class);
+    Route::patch('/categories/{category}/archive', [CategoryController::class, 'toggleArchive'])->name('categories.archive');
+    Route::get('/categories/type/{type}', [CategoryController::class, 'getByType'])->name('categories.by-type');
+    
     // Budgets
     Route::resource('budgets', BudgetController::class);
-Route::get('/budgets/categories', [BudgetController::class, 'categories'])->name('budgets.categories');
-Route::post('/budgets/copy-from-previous', [BudgetController::class, 'copyFromPrevious'])->name('budgets.copy-from-previous');
+    Route::get('/budgets/categories', [BudgetController::class, 'categories'])->name('budgets.categories');
+    Route::post('/budgets/copy-from-previous', [BudgetController::class, 'copyFromPrevious'])->name('budgets.copy-from-previous');
     
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
