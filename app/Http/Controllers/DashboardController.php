@@ -36,6 +36,9 @@ class DashboardController extends Controller
         $currentMonth = now()->format('Y-m');
         $budget = $user->budgets()->forMonth($currentMonth)->first();
         
+        // Get all budgets for overview
+        $budgets = $user->budgets()->orderBy('month', 'desc')->get();
+        
         // Get debts summary
         $debts = $user->debts()->active()->get();
         $totalDebt = $debts->sum('current_balance');
@@ -47,16 +50,33 @@ class DashboardController extends Controller
         // Calculate net worth
         $netWorth = $totalBalance + $totalAssets - $totalDebt;
         
+        // Calculate monthly income and expenses for current month
+        $monthStart = now()->startOfMonth();
+        $monthEnd = now()->endOfMonth();
+        
+        $monthlyIncome = $user->transactions()
+            ->where('type', 'income')
+            ->whereBetween('occurred_on', [$monthStart, $monthEnd])
+            ->sum('amount');
+            
+        $monthlyExpenses = $user->transactions()
+            ->where('type', 'expense')
+            ->whereBetween('occurred_on', [$monthStart, $monthEnd])
+            ->sum('amount');
+        
         return view('dashboard.index', compact(
             'accounts',
             'totalBalance',
             'recentTransactions',
             'budget',
+            'budgets',
             'debts',
             'totalDebt',
             'assets',
             'totalAssets',
-            'netWorth'
+            'netWorth',
+            'monthlyIncome',
+            'monthlyExpenses'
         ));
     }
 
