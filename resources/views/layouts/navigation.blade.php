@@ -70,7 +70,7 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ml-6">
-                <x-dropdown align="right" width="48">
+                <x-dropdown align="right" width="40">
                     <x-slot name="trigger">
                         <button class="flex items-center text-sm font-medium text-text-secondary hover:text-text-primary focus:outline-none transition-colors duration-200">
                             <div class="flex items-center space-x-3">
