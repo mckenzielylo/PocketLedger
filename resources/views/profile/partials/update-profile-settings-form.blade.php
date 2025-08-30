@@ -1,4 +1,4 @@
-<form method="post" action="{{ route('profile.settings') }}" class="space-y-6">
+<form method="post" action="{{ route('profile.settings') }}" class="space-y-4">
     @csrf
     @method('patch')
 
@@ -14,7 +14,7 @@
             <option value="JPY" {{ ($user->settings['currency'] ?? '') === 'JPY' ? 'selected' : '' }}>JPY - Japanese Yen</option>
             <option value="SGD" {{ ($user->settings['currency'] ?? '') === 'SGD' ? 'selected' : '' }}>SGD - Singapore Dollar</option>
         </select>
-        <x-input-error class="mt-2" :messages="$errors->get('currency')" />
+        <x-input-error class="mt-1" :messages="$errors->get('currency')" />
     </div>
 
     <!-- Date Format -->
@@ -27,7 +27,7 @@
             <option value="m/d/Y" {{ ($user->settings['date_format'] ?? '') === 'm/d/Y' ? 'selected' : '' }}>MM/DD/YYYY (01/15/2024)</option>
             <option value="d-m-Y" {{ ($user->settings['date_format'] ?? '') === 'd-m-Y' ? 'selected' : '' }}>DD-MM-YYYY (15-01-2024)</option>
         </select>
-        <x-input-error class="mt-2" :messages="$errors->get('date_format')" />
+        <x-input-error class="mt-1" :messages="$errors->get('date_format')" />
     </div>
 
     <!-- Language -->
@@ -38,7 +38,7 @@
             <option value="en" {{ ($user->settings['language'] ?? '') === 'en' ? 'selected' : '' }}>English</option>
             <option value="id" {{ ($user->settings['language'] ?? '') === 'id' ? 'selected' : '' }}>Bahasa Indonesia</option>
         </select>
-        <x-input-error class="mt-2" :messages="$errors->get('language')" />
+        <x-input-error class="mt-1" :messages="$errors->get('language')" />
     </div>
 
     <!-- Theme -->
@@ -50,7 +50,7 @@
             <option value="dark" {{ ($user->settings['theme'] ?? '') === 'dark' ? 'selected' : '' }}>Dark</option>
             <option value="auto" {{ ($user->settings['theme'] ?? '') === 'auto' ? 'selected' : '' }}>Auto (System)</option>
         </select>
-        <x-input-error class="mt-2" :messages="$errors->get('theme')" />
+        <x-input-error class="mt-1" :messages="$errors->get('theme')" />
     </div>
 
     <!-- Dashboard Layout -->
@@ -62,13 +62,13 @@
             <option value="list" {{ ($user->settings['dashboard_layout'] ?? '') === 'list' ? 'selected' : '' }}>List</option>
             <option value="compact" {{ ($user->settings['dashboard_layout'] ?? '') === 'compact' ? 'selected' : '' }}>Compact</option>
         </select>
-        <x-input-error class="mt-2" :messages="$errors->get('dashboard_layout')" />
+        <x-input-error class="mt-1" :messages="$errors->get('dashboard_layout')" />
     </div>
 
     <!-- Notifications -->
     <div>
-        <x-input-label :value="__('Notifications')" class="mb-3" />
-        <div class="space-y-3">
+        <x-input-label :value="__('Notifications')" class="mb-2" />
+        <div class="space-y-2">
             <label class="flex items-center">
                 <input type="checkbox" name="notifications[email]" value="1" 
                        {{ ($user->settings['notifications']['email'] ?? false) ? 'checked' : '' }}
@@ -92,7 +92,7 @@
         </div>
     </div>
 
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-4 pt-2">
         <x-primary-button>{{ __('Save Settings') }}</x-primary-button>
 
         @if (session('status') === 'settings-updated')

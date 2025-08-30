@@ -1,13 +1,13 @@
-<div class="space-y-6">
+<div class="space-y-4">
     <!-- Current Avatar Display -->
-    <div class="flex items-center space-x-6">
+    <div class="flex items-center space-x-4">
         <div class="flex-shrink-0">
             @if($user->settings['avatar'] ?? false)
-                <img class="w-24 h-24 rounded-full object-cover border-4 border-primary-200 dark:border-primary-700 shadow-lg" 
+                <img class="w-20 h-20 rounded-full object-cover border-4 border-primary-200 dark:border-primary-700 shadow-lg" 
                      src="{{ Storage::url($user->settings['avatar']) }}" 
                      alt="{{ $user->name }}'s avatar">
             @else
-                <div class="w-24 h-24 bg-gradient-primary rounded-full flex items-center justify-center text-white text-4xl font-bold border-4 border-primary-200 dark:border-primary-700 shadow-lg">
+                <div class="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center text-white text-3xl font-bold border-4 border-primary-200 dark:border-primary-700 shadow-lg">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
             @endif
@@ -38,10 +38,10 @@
     </div>
 
     <!-- Upload New Avatar -->
-    <div class="border-t border-neutral-700 pt-6">
-        <h4 class="text-md font-medium text-text-primary mb-4">Upload New Picture</h4>
+    <div class="border-t border-neutral-700 pt-4">
+        <h4 class="text-md font-medium text-text-primary mb-3">Upload New Picture</h4>
         
-        <form method="post" action="{{ route('profile.avatar') }}" enctype="multipart/form-data" class="space-y-4">
+        <form method="post" action="{{ route('profile.avatar') }}" enctype="multipart/form-data" class="space-y-3">
             @csrf
             @method('patch')
 
@@ -60,10 +60,10 @@
                 <p class="mt-1 text-xs text-text-tertiary">
                     Accepted formats: JPG, PNG, GIF. Maximum size: 2MB.
                 </p>
-                <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+                <x-input-error class="mt-1" :messages="$errors->get('avatar')" />
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 pt-2">
                 <x-primary-button>{{ __('Upload Picture') }}</x-primary-button>
 
                 @if (session('status') === 'avatar-updated')
