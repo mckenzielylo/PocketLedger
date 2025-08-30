@@ -20,16 +20,13 @@ class Debt extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'lender',
-        'principal',
+        'amount',
+        'type',
         'interest_rate',
-        'min_payment',
-        'due_day',
-        'current_balance',
+        'due_date',
+        'description',
+        'is_paid',
         'account_id',
-        'opened_on',
-        'closed_on',
-        'note',
     ];
 
     /**
@@ -38,12 +35,10 @@ class Debt extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'principal' => 'decimal:2',
+        'amount' => 'decimal:2',
         'interest_rate' => 'decimal:2',
-        'min_payment' => 'decimal:2',
-        'current_balance' => 'decimal:2',
-        'opened_on' => 'date',
-        'closed_on' => 'date',
+        'due_date' => 'date',
+        'is_paid' => 'boolean',
     ];
 
     /**
@@ -63,9 +58,9 @@ class Debt extends Model
     }
 
     /**
-     * Get the debt payments for this debt.
+     * Get the payments for this debt.
      */
-    public function debtPayments(): HasMany
+    public function payments(): HasMany
     {
         return $this->hasMany(DebtPayment::class);
     }
@@ -75,7 +70,7 @@ class Debt extends Model
      */
     public function scopeActive($query)
     {
-        return $query->whereNull('closed_on');
+        return $query->where('is_paid', false);
     }
 
     /**
@@ -87,41 +82,56 @@ class Debt extends Model
     }
 
     /**
-     * Get the next due date for this debt.
+     * Check if the debt is overdue.
      */
-    public function getNextDueDate(): string
+    public function getIsOverdueAttribute(): bool
     {
-        $today = now();
-        $nextDue = $today->copy()->day($this->due_day);
-        
-        if ($nextDue->lt($today)) {
-            $nextDue->addMonth();
+        return $this->due_date && $this->due_date->isPast() && !$this->is_paid;
+    }
+
+    /**
+     * Check if the debt is due soon (within 7 days).
+     */
+    public function getIsDueSoonAttribute(): bool
+    {
+        return $this->due_date && 
+               $this->due_date->isFuture() && 
+               $this->due_date->diffInDays(now()) <= 7 && 
+               !$this->is_paid;
+    }
+
+    /**
+     * Calculate the total amount paid.
+     */
+    public function getTotalPaidAttribute(): float
+    {
+        return $this->payments()->sum('amount');
+    }
+
+    /**
+     * Calculate the remaining amount.
+     */
+    public function getRemainingAmountAttribute(): float
+    {
+        return $this->amount - $this->total_paid;
+    }
+
+    /**
+     * Calculate the payment progress percentage.
+     */
+    public function getPaymentProgressAttribute(): float
+    {
+        if ($this->amount <= 0) {
+            return 0;
         }
-        
-        return $nextDue->format('Y-m-d');
+        return min(($this->total_paid / $this->amount) * 100, 100);
     }
 
     /**
-     * Calculate the total interest paid.
+     * Check if the debt is fully paid.
      */
-    public function getTotalInterestPaidAttribute(): float
+    public function getIsFullyPaidAttribute(): bool
     {
-        return $this->debtPayments()->sum('interest_paid');
-    }
-
-    /**
-     * Calculate the total principal paid.
-     */
-    public function getTotalPrincipalPaidAttribute(): float
-    {
-        return $this->debtPayments()->sum('principal_paid');
-    }
-
-    /**
-     * Calculate the remaining principal.
-     */
-    public function getRemainingPrincipalAttribute(): float
-    {
-        return $this->principal - $this->total_principal_paid;
+        return $this->total_paid >= $this->amount;
     }
 }

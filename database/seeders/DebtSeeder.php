@@ -25,17 +25,15 @@ class DebtSeeder extends Seeder
 
         $debt = $user->debts()->create([
             'name' => 'Car Loan',
-            'lender' => 'Bank ABC',
-            'principal' => 50000000,
+            'amount' => 50000000,
+            'type' => 'borrowed',
             'interest_rate' => 8.5,
-            'min_payment' => 1500000,
-            'due_day' => 25,
-            'current_balance' => 50000000,
+            'due_date' => now()->addMonths(6),
+            'description' => '5-year car loan for new vehicle',
+            'is_paid' => false,
             'account_id' => $bankAccount->id,
-            'opened_on' => now()->subMonths(6),
-            'note' => '5-year car loan for new vehicle',
         ]);
 
-        $this->command->info("Debt created: {$debt->name} - {$debt->principal}");
+        $this->command->info("Debt created: {$debt->name} - IDR " . number_format($debt->amount, 0, ',', '.'));
     }
 }

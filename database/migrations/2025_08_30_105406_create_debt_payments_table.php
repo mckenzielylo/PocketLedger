@@ -15,14 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('debt_id')->constrained()->onDelete('cascade');
-            $table->foreignId('transaction_id')->constrained()->onDelete('cascade');
-            $table->decimal('principal_paid', 14, 2);
-            $table->decimal('interest_paid', 14, 2);
-            $table->date('paid_on');
+            $table->decimal('amount', 14, 2);
+            $table->date('payment_date');
+            $table->text('notes')->nullable();
             $table->timestamps();
             
-            $table->index(['user_id', 'debt_id', 'paid_on']);
-            $table->index(['debt_id', 'paid_on']);
+            $table->index(['user_id', 'debt_id', 'payment_date']);
+            $table->index(['debt_id', 'payment_date']);
         });
     }
 

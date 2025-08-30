@@ -42,6 +42,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/categories/{category}/archive', [CategoryController::class, 'toggleArchive'])->name('categories.archive');
     Route::get('/categories/type/{type}', [CategoryController::class, 'getByType'])->name('categories.by-type');
     
+    // Debts
+    Route::resource('debts', DebtController::class);
+    Route::post('/debts/{debt}/payments', [DebtController::class, 'recordPayment'])->name('debts.payments.store');
+    Route::patch('/debts/{debt}/mark-paid', [DebtController::class, 'markAsPaid'])->name('debts.mark-paid');
+    Route::patch('/debts/{debt}/mark-unpaid', [DebtController::class, 'markAsUnpaid'])->name('debts.mark-unpaid');
+    Route::get('/debts/stats', [DebtController::class, 'getStats'])->name('debts.stats');
+    
     // Budgets
     Route::resource('budgets', BudgetController::class);
     Route::get('/budgets/categories', [BudgetController::class, 'categories'])->name('budgets.categories');

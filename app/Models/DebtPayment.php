@@ -18,10 +18,9 @@ class DebtPayment extends Model
     protected $fillable = [
         'user_id',
         'debt_id',
-        'transaction_id',
-        'principal_paid',
-        'interest_paid',
-        'paid_on',
+        'amount',
+        'payment_date',
+        'notes',
     ];
 
     /**
@@ -30,9 +29,8 @@ class DebtPayment extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'principal_paid' => 'decimal:2',
-        'interest_paid' => 'decimal:2',
-        'paid_on' => 'date',
+        'amount' => 'decimal:2',
+        'payment_date' => 'date',
     ];
 
     /**
@@ -52,18 +50,10 @@ class DebtPayment extends Model
     }
 
     /**
-     * Get the transaction for this payment.
-     */
-    public function transaction(): BelongsTo
-    {
-        return $this->belongsTo(Transaction::class);
-    }
-
-    /**
      * Get the total amount paid.
      */
     public function getTotalPaidAttribute(): float
     {
-        return $this->principal_paid + $this->interest_paid;
+        return $this->amount;
     }
 }

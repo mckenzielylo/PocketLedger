@@ -15,21 +15,18 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('name');
-            $table->string('lender')->nullable();
-            $table->decimal('principal', 14, 2);
+            $table->decimal('amount', 14, 2);
+            $table->enum('type', ['borrowed', 'lent']);
             $table->decimal('interest_rate', 5, 2)->nullable(); // Annual percentage
-            $table->decimal('min_payment', 14, 2);
-            $table->tinyInteger('due_day'); // 1-28
-            $table->decimal('current_balance', 14, 2);
-            $table->foreignId('account_id')->nullable()->constrained()->onDelete('set null');
-            $table->date('opened_on');
-            $table->date('closed_on')->nullable();
-            $table->text('note')->nullable();
+            $table->date('due_date')->nullable();
+            $table->text('description')->nullable();
+            $table->boolean('is_paid')->default(false);
+            $table->foreignId('account_id')->constrained()->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index(['user_id', 'due_day']);
-            $table->index(['user_id', 'closed_on']);
+            $table->index(['user_id', 'due_date']);
+            $table->index(['user_id', 'is_paid']);
         });
     }
 

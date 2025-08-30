@@ -90,6 +90,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's debt payments.
+     */
+    public function debtPayments(): HasMany
+    {
+        return $this->hasMany(DebtPayment::class);
+    }
+
+    /**
      * Get the user's assets.
      */
     public function assets(): HasMany
