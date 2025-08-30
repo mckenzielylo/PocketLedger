@@ -40,7 +40,7 @@
                             </div>
                             <div class="text-right">
                                                         <p class="text-2xl font-bold text-gray-900 dark:text-white">
-                            IDR {{ number_format($budget->total_limit, 0, ',', '.') }}
+                            {{ Auth::user()->preferred_currency_symbol }} {{ number_format($budget->total_limit, 0, ',', '.') }}
                         </p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Total Budget</p>
                             </div>
@@ -50,13 +50,17 @@
                         <div class="space-y-3 mb-4">
                             @foreach($budget->budgetCategories->take(3) as $budgetCategory)
                                 @php
+                                    $monthParts = explode('-', $budget->month);
+                                    $year = $monthParts[0];
+                                    $month = $monthParts[1];
+                                    
                                     $spending = $budgetCategory->category->transactions()
                                         ->where('type', 'expense')
-                                        ->whereYear('occurred_on', $budget->year)
-                                        ->whereMonth('occurred_on', $budget->month)
+                                        ->whereYear('occurred_on', $year)
+                                        ->whereMonth('occurred_on', $month)
                                         ->sum('amount');
-                                    $percentage = $budgetCategory->amount > 0 ? ($spending / $budgetCategory->amount) * 100 : 0;
-                                    $isOverBudget = $spending > $budgetCategory->amount;
+                                    $percentage = $budgetCategory->limit_amount > 0 ? ($spending / $budgetCategory->limit_amount) * 100 : 0;
+                                    $isOverBudget = $spending > $budgetCategory->limit_amount;
                                 @endphp
                                 
                                 <div class="flex items-center justify-between">
@@ -73,8 +77,8 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                            IDR {{ number_format($spending, 0, ',', '.') }}
-                                            <span class="text-gray-500 dark:text-gray-400">/ {{ number_format($budgetCategory->amount, 0, ',', '.') }}</span>
+                                            {{ Auth::user()->preferred_currency_symbol }} {{ number_format($spending, 0, ',', '.') }}
+                                            <span class="text-gray-500 dark:text-gray-400">/ {{ number_format($budgetCategory->limit_amount, 0, ',', '.') }}</span>
                                         </p>
                                         <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1">
                                             <div class="bg-primary-600 h-2 rounded-full @if($isOverBudget) bg-red-500 @elseif($percentage >= 80) bg-yellow-500 @endif" 

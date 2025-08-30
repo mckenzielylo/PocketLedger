@@ -36,7 +36,7 @@
                 <div class="text-center">
                     <p class="text-sm text-gray-500 dark:text-gray-400">Total Budget</p>
                                             <p class="text-3xl font-bold text-gray-900 dark:text-white">
-                            IDR {{ number_format($budget->total_limit, 0, ',', '.') }}
+                            {{ Auth::user()->preferred_currency_symbol }} {{ number_format($budget->total_limit, 0, ',', '.') }}
                         </p>
                 </div>
                 <div class="text-center">
@@ -46,7 +46,7 @@
                         $totalPercentage = $budget->total_limit > 0 ? ($totalSpent / $budget->total_limit) * 100 : 0;
                     @endphp
                     <p class="text-3xl font-bold text-gray-900 dark:text-white">
-                        IDR {{ number_format($totalSpent, 0, ',', '.') }}
+                        {{ Auth::user()->preferred_currency_symbol }} {{ number_format($totalSpent, 0, ',', '.') }}
                     </p>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center space-x-3">
                                 <div class="w-3 h-3 rounded-full 
-                                    @if($budgetCategory->spending > $budgetCategory->amount) bg-red-500
+                                    @if($budgetCategory->spending > $budgetCategory->limit_amount) bg-red-500
                                     @elseif($budgetCategory->percentage >= 80) bg-yellow-500
                                     @else bg-green-500
                                     @endif">
@@ -86,8 +86,8 @@
                             </div>
                             <div class="text-right">
                                 <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                    IDR {{ number_format($budgetCategory->spending, 0, ',', '.') }}
-                                    <span class="text-gray-500 dark:text-gray-400">/ {{ number_format($budgetCategory->amount, 0, ',', '.') }}</span>
+                                    {{ Auth::user()->preferred_currency_symbol }} {{ number_format($budgetCategory->spending, 0, ',', '.') }}
+                                    <span class="text-gray-500 dark:text-gray-400">/ {{ number_format($budgetCategory->limit_amount, 0, ',', '.') }}</span>
                                 </p>
                             </div>
                         </div>
@@ -99,7 +99,7 @@
                                 <span class="text-xs text-gray-500 dark:text-gray-400">{{ number_format($budgetCategory->percentage, 1) }}%</span>
                             </div>
                             <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                <div class="h-2 rounded-full @if($budgetCategory->spending > $budgetCategory->amount) bg-red-500 @elseif($budgetCategory->percentage >= 80) bg-yellow-500 @else bg-primary-500 @endif" 
+                                <div class="h-2 rounded-full @if($budgetCategory->spending > $budgetCategory->limit_amount) bg-red-500 @elseif($budgetCategory->percentage >= 80) bg-yellow-500 @else bg-primary-500 @endif" 
                                      style="width: {{ min($budgetCategory->percentage, 100) }}%"></div>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
                         <!-- Status and Remaining -->
                         <div class="flex items-center justify-between text-sm">
                             <div class="flex items-center space-x-2">
-                                @if($budgetCategory->spending > $budgetCategory->amount)
+                                @if($budgetCategory->spending > $budgetCategory->limit_amount)
                                     <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
                                         Over Budget
                                     </span>
@@ -125,11 +125,11 @@
                             <div class="text-right">
                                 @if($budgetCategory->remaining > 0)
                                     <p class="text-green-600 dark:text-green-400">
-                                        IDR {{ number_format($budgetCategory->remaining, 0, ',', '.') }} remaining
+                                        {{ Auth::user()->preferred_currency_symbol }} {{ number_format($budgetCategory->remaining, 0, ',', '.') }} remaining
                                     </p>
                                 @else
                                     <p class="text-red-600 dark:text-red-400">
-                                        IDR {{ number_format(abs($budgetCategory->remaining), 0, ',', '.') }} over
+                                        {{ Auth::user()->preferred_currency_symbol }} {{ number_format(abs($budgetCategory->remaining), 0, ',', '.') }} over
                                     </p>
                                 @endif
                             </div>
@@ -145,11 +145,11 @@
             <div class="space-y-3">
                 <div class="flex items-center justify-between">
                     <span class="text-gray-600 dark:text-gray-400">Total Budget</span>
-                    <span class="font-medium text-gray-900 dark:text-white">IDR {{ number_format($budget->total_limit, 0, ',', '.') }}</span>
+                    <span class="font-medium text-gray-900 dark:text-white">{{ Auth::user()->preferred_currency_symbol }} {{ number_format($budget->total_limit, 0, ',', '.') }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-gray-600 dark:text-gray-400">Total Spent</span>
-                    <span class="font-medium text-gray-900 dark:text-white">IDR {{ number_format($totalSpent, 0, ',', '.') }}</span>
+                    <span class="font-medium text-gray-900 dark:text-white">{{ Auth::user()->preferred_currency_symbol }} {{ number_format($totalSpent, 0, ',', '.') }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-gray-600 dark:text-gray-400">Remaining</span>
@@ -157,7 +157,7 @@
                         $remaining = $budget->total_limit - $totalSpent;
                     @endphp
                     <span class="font-medium @if($remaining >= 0) text-green-600 dark:text-green-400 @else text-red-600 dark:text-red-400 @endif">
-                        IDR {{ number_format(abs($remaining), 0, ',', '.') }} {{ $remaining >= 0 ? 'remaining' : 'over' }}
+                        {{ Auth::user()->preferred_currency_symbol }} {{ number_format(abs($remaining), 0, ',', '.') }} {{ $remaining >= 0 ? 'remaining' : 'over' }}
                     </span>
                 </div>
                 <div class="flex items-center justify-between">
