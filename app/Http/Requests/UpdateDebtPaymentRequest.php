@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class UpdateDebtPaymentRequest extends FormRequest
 {
@@ -11,7 +12,9 @@ class UpdateDebtPaymentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        $debtPayment = $this->route('debtPayment');
+        $debt = $debtPayment->debt;
+        return Gate::allows('update', $debt);
     }
 
     /**
@@ -22,7 +25,25 @@ class UpdateDebtPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'amount' => 'required|numeric|min:0.01',
+            'payment_date' => 'required|date|before_or_equal:today',
+            'notes' => 'nullable|string|max:500',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'amount.required' => 'Payment amount is required.',
+            'amount.numeric' => 'Payment amount must be a valid number.',
+            'amount.min' => 'Payment amount must be at least $0.01.',
+            'payment_date.required' => 'Payment date is required.',
+            'payment_date.date' => 'Payment date must be a valid date.',
+            'payment_date.before_or_equal' => 'Payment date cannot be in the future.',
+            'notes.max' => 'Notes cannot exceed 500 characters.',
         ];
     }
 }

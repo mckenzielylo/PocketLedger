@@ -6,6 +6,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DebtController;
+use App\Http\Controllers\DebtPaymentController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\BudgetController;
 use Illuminate\Support\Facades\Route;
@@ -29,16 +30,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Categories
     Route::resource('categories', CategoryController::class);
-    
-    // Debts
-    Route::resource('debts', DebtController::class);
-    Route::post('/debts/{debt}/payments', [DebtController::class, 'recordPayment'])->name('debts.payments.store');
-    
-    // Assets
-    Route::resource('assets', AssetController::class);
-    
-        // Categories
-    Route::resource('categories', CategoryController::class);
     Route::patch('/categories/{category}/archive', [CategoryController::class, 'toggleArchive'])->name('categories.archive');
     Route::get('/categories/type/{type}', [CategoryController::class, 'getByType'])->name('categories.by-type');
     
@@ -48,6 +39,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/debts/{debt}/mark-paid', [DebtController::class, 'markAsPaid'])->name('debts.mark-paid');
     Route::patch('/debts/{debt}/mark-unpaid', [DebtController::class, 'markAsUnpaid'])->name('debts.mark-unpaid');
     Route::get('/debts/stats', [DebtController::class, 'getStats'])->name('debts.stats');
+    
+    // Debt Payments
+    Route::resource('debt-payments', DebtPaymentController::class)->except(['index', 'create']);
+    Route::get('/debts/{debt}/payments', [DebtPaymentController::class, 'index'])->name('debt-payments.index');
+    Route::get('/debts/{debt}/payments/create', [DebtPaymentController::class, 'create'])->name('debt-payments.create');
+    
+    // Assets
+    Route::resource('assets', AssetController::class);
     
     // Budgets
     Route::resource('budgets', BudgetController::class);
