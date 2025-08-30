@@ -23,7 +23,7 @@
     }
     
     /* Dark theme */
-    .dark {
+    html.dark {
         --bg-primary: #0f172a;
         --bg-secondary: #1e293b;
         --bg-tertiary: #334155;
@@ -37,8 +37,10 @@
     }
     
     body {
-        @apply bg-background-primary text-text-primary;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+        transition: background-color 0.2s ease, color 0.2s ease;
     }
     
     /* YNAB-style scrollbar */
@@ -48,15 +50,16 @@
     }
     
     ::-webkit-scrollbar-track {
-        @apply bg-background-secondary;
+        background-color: var(--bg-secondary);
     }
     
     ::-webkit-scrollbar-thumb {
-        @apply bg-neutral-600 rounded-full;
+        background-color: #525252;
+        border-radius: 9999px;
     }
     
     ::-webkit-scrollbar-thumb:hover {
-        @apply bg-neutral-500;
+        background-color: #737373;
     }
 }
 
