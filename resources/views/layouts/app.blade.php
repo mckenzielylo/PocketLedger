@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full" data-theme="{{ Auth::user()->effective_theme }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -39,8 +39,29 @@
             });
         }
     </script>
+
+    <!-- Theme Initialization -->
+    <script>
+        // Initialize theme based on user preference
+        (function() {
+            const userTheme = '{{ Auth::user()->effective_theme }}';
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // Set initial theme
+            if (userTheme === 'dark' || (userTheme === 'auto' && systemPrefersDark)) {
+                document.documentElement.classList.add('dark');
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+            
+            // Store theme preference
+            localStorage.setItem('theme', userTheme);
+        })();
+    </script>
 </head>
-<body class="font-sans antialiased h-full bg-background-primary">
+<body class="font-sans antialiased h-full bg-background-primary transition-colors duration-200">
     <div class="min-h-full">
         <!-- Navigation -->
         @include('layouts.navigation')
@@ -91,7 +112,7 @@
             <div class="flex-shrink-0">
                 <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2h2a2 2 0 002-2z"></path>
                     </svg>
                 </div>
             </div>
@@ -136,6 +157,34 @@
 
         dismissBtn.addEventListener('click', () => {
             installPrompt.classList.add('hidden');
+        });
+
+        // Theme switching functionality
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'theme') {
+                const newTheme = e.newValue;
+                if (newTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            }
+        });
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+            const userTheme = localStorage.getItem('theme');
+            if (userTheme === 'auto') {
+                if (e.matches) {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            }
         });
     </script>
 </body>

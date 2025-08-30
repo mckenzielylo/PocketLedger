@@ -142,6 +142,47 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's preferred theme.
+     */
+    public function getPreferredThemeAttribute(): string
+    {
+        return $this->settings['theme'] ?? 'auto';
+    }
+
+    /**
+     * Check if the user prefers dark theme.
+     */
+    public function getPrefersDarkThemeAttribute(): bool
+    {
+        $theme = $this->preferred_theme;
+        
+        if ($theme === 'dark') {
+            return true;
+        }
+        
+        if ($theme === 'light') {
+            return false;
+        }
+        
+        // Auto theme - check system preference
+        return request()->prefersDarkMode();
+    }
+
+    /**
+     * Get the current effective theme (resolved from auto setting).
+     */
+    public function getEffectiveThemeAttribute(): string
+    {
+        $theme = $this->preferred_theme;
+        
+        if ($theme === 'auto') {
+            return request()->prefersDarkMode() ? 'dark' : 'light';
+        }
+        
+        return $theme;
+    }
+
+    /**
      * Get the user's default account.
      */
     public function defaultAccount()

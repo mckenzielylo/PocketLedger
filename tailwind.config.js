@@ -10,6 +10,8 @@ export default {
         './resources/views/**/*.blade.php',
     ],
 
+    darkMode: 'class',
+
     theme: {
         extend: {
             fontFamily: {
@@ -100,20 +102,20 @@ export default {
                     900: '#171717',
                     950: '#0a0a0a',
                 },
-                // YNAB background colors
+                // Dynamic background colors - will be overridden by CSS variables
                 background: {
-                    primary: '#0f172a',    // Dark blue-gray
-                    secondary: '#1e293b',   // Lighter blue-gray
-                    tertiary: '#334155',    // Even lighter blue-gray
-                    card: '#1e293b',        // Card background
-                    surface: '#0f172a',     // Surface background
+                    primary: 'var(--bg-primary)',
+                    secondary: 'var(--bg-secondary)',
+                    tertiary: 'var(--bg-tertiary)',
+                    card: 'var(--bg-card)',
+                    surface: 'var(--bg-surface)',
                 },
-                // YNAB text colors
+                // Dynamic text colors - will be overridden by CSS variables
                 text: {
-                    primary: '#f8fafc',     // White text
-                    secondary: '#cbd5e1',   // Light gray text
-                    tertiary: '#94a3b8',    // Muted text
-                    inverse: '#0f172a',     // Dark text on light backgrounds
+                    primary: 'var(--text-primary)',
+                    secondary: 'var(--text-secondary)',
+                    tertiary: 'var(--text-tertiary)',
+                    inverse: 'var(--text-inverse)',
                 }
             },
             spacing: {
