@@ -58,7 +58,11 @@
 
         <!-- Page Content -->
         <main class="bg-background-primary min-h-screen">
-            {{ $slot }}
+            @hasSection('content')
+                @yield('content')
+            @else
+                {{ $slot }}
+            @endif
         </main>
 
         <!-- Footer -->

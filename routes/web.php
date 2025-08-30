@@ -18,6 +18,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/test', function() { return view('dashboard.test'); })->name('dashboard.test');
     Route::get('/reports', [DashboardController::class, 'reports'])->name('reports');
     
     // Transactions
