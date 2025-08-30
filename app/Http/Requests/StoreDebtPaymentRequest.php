@@ -13,7 +13,7 @@ class StoreDebtPaymentRequest extends FormRequest
     public function authorize(): bool
     {
         $debt = $this->route('debt');
-        return Gate::allows('update', $debt);
+        return $debt && Gate::allows('update', $debt);
     }
 
     /**

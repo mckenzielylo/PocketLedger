@@ -16,10 +16,8 @@ class DebtPaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Debt $debt): View
     {
-        /** @var \App\Models\Debt $debt */
-        $debt = $request->route('debt');
         Gate::authorize('view', $debt);
 
         $payments = $debt->payments()
@@ -32,10 +30,8 @@ class DebtPaymentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request): View
+    public function create(Debt $debt): View
     {
-        /** @var \App\Models\Debt $debt */
-        $debt = $request->route('debt');
         Gate::authorize('update', $debt);
 
         return view('debt-payments.create', compact('debt'));
@@ -44,10 +40,8 @@ class DebtPaymentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreDebtPaymentRequest $request): RedirectResponse
+    public function store(StoreDebtPaymentRequest $request, Debt $debt): RedirectResponse
     {
-        /** @var \App\Models\Debt $debt */
-        $debt = $request->route('debt');
         Gate::authorize('update', $debt);
 
         $payment = new DebtPayment($request->validated());
