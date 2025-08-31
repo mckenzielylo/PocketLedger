@@ -56,17 +56,16 @@
                     </div>
                 </div>
                 
-                <!-- Type Filter -->
-                <div class="flex-shrink-0">
+                <!-- Type and Status Filters on same line -->
+                <div class="flex gap-2">
+                    <!-- Type Filter -->
                     <select id="type-filter" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="">All Types</option>
                         <option value="income">Income</option>
                         <option value="expense">Expense</option>
                     </select>
-                </div>
-                
-                <!-- Status Filter -->
-                <div class="flex-shrink-0">
+                    
+                    <!-- Status Filter -->
                     <select id="status-filter" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="">All Status</option>
                         <option value="active">Active</option>
