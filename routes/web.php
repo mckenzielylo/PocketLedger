@@ -10,12 +10,13 @@ use App\Http\Controllers\DebtPaymentController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\BudgetController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/test', function() { return view('dashboard.test'); })->name('dashboard.test');
@@ -62,6 +63,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
     Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // User theme update
+    Route::post('/user/theme', function (Request $request) {
+        $request->validate(['theme' => 'required|in:light,dark,auto']);
+        auth()->user()->setSetting('theme', $request->theme);
+        return response()->json(['success' => true]);
+    })->name('user.theme.update');
 });
 
 require __DIR__.'/auth.php';

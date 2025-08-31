@@ -194,19 +194,39 @@
 
         if (themeToggleBtn) {
             themeToggleBtn.addEventListener('click', function() {
-                // Toggle theme
-                if (document.documentElement.classList.contains('dark')) {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                    console.log('Switched to light theme');
-                } else {
+                console.log('Theme toggle clicked!');
+                console.log('Current dark class:', document.documentElement.classList.contains('dark'));
+                console.log('Current data-theme:', document.documentElement.getAttribute('data-theme'));
+                
+                // Get current theme state
+                const isDark = document.documentElement.classList.contains('dark');
+                const newTheme = isDark ? 'light' : 'dark';
+                
+                console.log('Switching to theme:', newTheme);
+                
+                // Update DOM
+                if (newTheme === 'dark') {
                     document.documentElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                    console.log('Switched to dark theme');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    console.log('Added dark class and set data-theme to dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    console.log('Removed dark class and set data-theme to light');
                 }
+                
+                // Update localStorage
+                localStorage.setItem('theme', newTheme);
+                
+                // Update user settings in database
+                updateUserTheme(newTheme);
                 
                 // Update icon visibility
                 updateThemeToggleIcon();
+                
+                console.log('Switched to', newTheme, 'theme');
+                console.log('Final dark class:', document.documentElement.classList.contains('dark'));
+                console.log('Final data-theme:', document.documentElement.getAttribute('data-theme'));
             });
         }
 
@@ -218,6 +238,26 @@
             } else {
                 themeToggleDarkIcon.classList.add('hidden');
                 themeToggleLightIcon.classList.remove('hidden');
+            }
+        }
+
+        // Function to update user theme in database
+        async function updateUserTheme(theme) {
+            try {
+                const response = await fetch('/user/theme', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ theme: theme })
+                });
+                
+                if (!response.ok) {
+                    console.error('Failed to update theme setting');
+                }
+            } catch (error) {
+                console.error('Error updating theme:', error);
             }
         }
 
