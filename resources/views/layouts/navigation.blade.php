@@ -1,16 +1,16 @@
-<nav class="bg-background-secondary border-b border-neutral-700 shadow-ynab" x-data="{ open: false }">
+<nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm" x-data="{ open: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                             </svg>
                         </div>
-                        <span class="text-xl font-bold text-gradient">PocketLedger</span>
+                        <span class="text-xl font-bold text-gray-900 dark:text-white">PocketLedger</span>
                     </a>
                 </div>
 
@@ -71,7 +71,7 @@
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ml-6">
                 <!-- Theme Toggle Button -->
-                <button id="theme-toggle" class="p-2 text-text-secondary hover:text-text-primary hover:bg-background-tertiary rounded-lg transition-colors duration-200 mr-2">
+                <button id="theme-toggle" class="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 mr-2">
                     <!-- Sun icon for dark mode -->
                     <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -84,14 +84,14 @@
 
                 <x-dropdown align="right" width="32">
                     <x-slot name="trigger">
-                        <button class="flex items-center text-sm font-medium text-text-secondary hover:text-text-primary focus:outline-none transition-colors duration-200">
+                        <button class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none transition-colors duration-200">
                             <div class="flex items-center space-x-3">
                                 @if(Auth::user()->settings['avatar'] ?? false)
-                                    <img class="w-8 h-8 rounded-full object-cover border-2 border-neutral-600" 
+                                    <img class="w-8 h-8 rounded-full object-cover border-2 border-gray-600" 
                                          src="{{ Storage::url(Auth::user()->settings['avatar']) }}" 
                                          alt="{{ Auth::user()->name }}'s avatar">
                                 @else
-                                    <div class="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                     </div>
                                 @endif
@@ -117,7 +117,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();"
-                                    class="flex items-center text-danger-400 hover:text-danger-300">
+                                    class="flex items-center text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                                 </svg>
@@ -130,7 +130,7 @@
 
             <!-- Hamburger -->
             <div class="-mr-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-background-tertiary focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 transition-all duration-200">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-all duration-200">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -195,10 +195,10 @@
         </div>
 
         <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-3 border-t border-neutral-700">
+        <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
             <div class="px-4">
-                <div class="font-medium text-text-primary">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-text-secondary">{{ Auth::user()->email }}</div>
+                <div class="font-medium text-gray-900 dark:text-white">{{ Auth::user()->name }}</div>
+                <div class="font-medium text-sm text-gray-700 dark:text-gray-300">{{ Auth::user()->email }}</div>
             </div>
 
             <div class="mt-3 space-y-1">
@@ -215,7 +215,7 @@
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();"
-                            class="nav-link text-danger-400 hover:text-danger-300">
+                            class="nav-link text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                         </svg>

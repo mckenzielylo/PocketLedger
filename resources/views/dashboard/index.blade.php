@@ -7,10 +7,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             <!-- Welcome Section -->
             <div class="text-center">
-                <h1 class="text-4xl font-bold text-text-primary mb-2">
+                <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
                     Welcome back, {{ Auth::user()->name }}! 👋
                 </h1>
-                <p class="text-text-secondary text-lg">
+                <p class="text-gray-600 dark:text-gray-400 text-lg">
                     Here's your financial overview for {{ now()->format('F Y') }}
                 </p>
             </div>
@@ -85,7 +85,7 @@
             <!-- Quick Actions -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="text-xl font-semibold text-text-primary">Quick Actions</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Quick Actions</h2>
                 </div>
                 <div class="card-body">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -126,7 +126,7 @@
                 <div class="lg:col-span-2">
                     <div class="card">
                         <div class="card-header flex items-center justify-between">
-                            <h2 class="text-xl font-semibold text-text-primary">Account Summary</h2>
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Account Summary</h2>
                             <a href="{{ route('accounts.index') }}" class="text-primary-400 hover:text-primary-300 text-sm font-medium">
                                 View All →
                             </a>
@@ -142,13 +142,13 @@
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h3 class="font-medium text-text-primary">{{ $account->name }}</h3>
-                                                <p class="text-sm text-text-secondary">{{ ucfirst($account->type) }}</p>
+                                                <h3 class="font-medium text-gray-900 dark:text-white">{{ $account->name }}</h3>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ ucfirst($account->type) }}</p>
                                             </div>
                                         </div>
                                         <div class="text-right">
-                                            <p class="font-semibold text-text-primary">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($account->current_balance, 2) }}</p>
-                                            <p class="text-sm text-text-secondary">{{ $account->currency }}</p>
+                                            <p class="font-semibold text-gray-900 dark:text-white">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($account->current_balance, 2) }}</p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $account->currency }}</p>
                                         </div>
                                     </div>
                                 @empty
@@ -158,8 +158,8 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
                                             </svg>
                                         </div>
-                                        <h3 class="text-lg font-medium text-text-primary mb-2">No accounts yet</h3>
-                                        <p class="text-text-secondary mb-4">Create your first account to get started</p>
+                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No accounts yet</h3>
+                                        <p class="text-gray-600 dark:text-gray-400 mb-4">Create your first account to get started</p>
                                         <a href="{{ route('accounts.create') }}" class="btn-primary">
                                             Create Account
                                         </a>
@@ -174,7 +174,7 @@
                 <div class="lg:col-span-1">
                     <div class="card">
                         <div class="card-header flex items-center justify-between">
-                            <h2 class="text-xl font-semibold text-text-primary">Recent Transactions</h2>
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Recent Transactions</h2>
                             <a href="{{ route('transactions.index') }}" class="text-primary-400 hover:text-primary-300 text-sm font-medium">
                                 View All →
                             </a>
@@ -190,15 +190,15 @@
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h4 class="text-sm font-medium text-text-primary">{{ Str::limit($transaction->payee ?: $transaction->category->name, 20) }}</h4>
-                                                <p class="text-xs text-text-secondary">{{ $transaction->account->name }}</p>
+                                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ Str::limit($transaction->payee ?: $transaction->category->name, 20) }}</h4>
+                                                <p class="text-xs text-gray-600 dark:text-gray-400">{{ $transaction->account->name }}</p>
                                             </div>
                                         </div>
                                         <div class="text-right">
                                             <p class="text-sm font-semibold {{ $transaction->isIncome ? 'text-success-400' : 'text-warning-400' }}">
                                                 {{ $transaction->isIncome ? '+' : '-' }}{{ Auth::user()->preferred_currency_symbol }}{{ number_format($transaction->amount, 2) }}
                                             </p>
-                                            <p class="text-xs text-text-secondary">{{ $transaction->occurred_on->format('M j') }}</p>
+                                            <p class="text-xs text-gray-600 dark:text-gray-400">{{ $transaction->occurred_on->format('M j') }}</p>
                                         </div>
                                     </div>
                                 @empty
@@ -208,8 +208,8 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                                             </svg>
                                         </div>
-                                        <h3 class="text-sm font-medium text-text-primary mb-1">No transactions yet</h3>
-                                        <p class="text-xs text-text-secondary">Start tracking your finances</p>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-1">No transactions yet</h3>
+                                        <p class="text-xs text-gray-600 dark:text-gray-400">Start tracking your finances</p>
                                     </div>
                                 @endforelse
                             </div>
@@ -220,7 +220,7 @@
                     @if($budgets->count() > 0)
                         <div class="card mt-6">
                             <div class="card-header flex items-center justify-between">
-                                <h2 class="text-xl font-semibold text-text-primary">Budget Overview</h2>
+                                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Budget Overview</h2>
                                 <a href="{{ route('budgets.index') }}" class="text-primary-400 hover:text-primary-300 text-sm font-medium">
                                     View All →
                                 </a>
@@ -230,8 +230,8 @@
                                     @foreach($budgets->take(3) as $budget)
                                         <div class="space-y-2">
                                             <div class="flex items-center justify-between">
-                                                <span class="text-sm font-medium text-text-primary">{{ $budget->month }}</span>
-                                                <span class="text-sm text-text-secondary">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($budget->total_spent, 2) }} / {{ Auth::user()->preferred_currency_symbol }}{{ number_format($budget->total_limit, 2) }}</span>
+                                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $budget->month }}</span>
+                                                <span class="text-sm text-gray-600 dark:text-gray-400">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($budget->total_spent, 2) }} / {{ Auth::user()->preferred_currency_symbol }}{{ number_format($budget->total_limit, 2) }}</span>
                                             </div>
                                             <div class="w-full bg-neutral-700 rounded-full h-2">
                                                 <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" 
