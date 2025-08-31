@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full" data-theme="{{ Auth::user()->effective_theme }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,10 +50,8 @@
             // Set initial theme
             if (userTheme === 'dark' || (userTheme === 'auto' && systemPrefersDark)) {
                 document.documentElement.classList.add('dark');
-                document.documentElement.setAttribute('data-theme', 'dark');
             } else {
                 document.documentElement.classList.remove('dark');
-                document.documentElement.setAttribute('data-theme', 'light');
             }
             
             // Store theme preference
@@ -61,16 +59,16 @@
         })();
     </script>
 </head>
-<body class="font-sans antialiased h-full bg-background-primary transition-colors duration-200">
+<body class="font-sans antialiased h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200">
     <div class="min-h-full">
         <!-- Navigation -->
         @include('layouts.navigation')
 
         <!-- Page Heading -->
         @if (isset($header))
-            <header class="bg-background-secondary border-b border-neutral-700 shadow-ynab">
+            <header class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <h1 class="text-3xl font-bold text-text-primary">
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
                         {{ $header }}
                     </h1>
                 </div>
@@ -78,7 +76,7 @@
         @endif
 
         <!-- Page Content -->
-        <main class="bg-background-primary min-h-screen">
+        <main class="bg-gray-50 dark:bg-gray-900 min-h-screen">
             @hasSection('content')
                 @yield('content')
             @else
@@ -87,17 +85,17 @@
         </main>
 
         <!-- Footer -->
-        <footer class="bg-background-secondary border-t border-neutral-700 mt-auto">
+        <footer class="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
             <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between">
-                    <div class="text-text-secondary text-sm">
+                    <div class="text-gray-600 dark:text-gray-400 text-sm">
                         © {{ date('Y') }} PocketLedger. Built with ❤️ using Laravel & Tailwind.
                     </div>
                     <div class="flex items-center space-x-4">
-                        <a href="#" class="text-text-secondary hover:text-text-primary transition-colors duration-200">
+                        <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                             Privacy Policy
                         </a>
-                        <a href="#" class="text-text-secondary hover:text-text-primary transition-colors duration-200">
+                        <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                             Terms of Service
                         </a>
                     </div>
@@ -107,24 +105,24 @@
     </div>
 
     <!-- PWA Install Prompt -->
-    <div id="pwa-install-prompt" class="hidden fixed bottom-4 right-4 bg-background-card border border-neutral-700 rounded-xl shadow-ynab-xl p-4 max-w-sm">
+    <div id="pwa-install-prompt" class="hidden fixed bottom-4 right-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-4 max-w-sm">
         <div class="flex items-start space-x-3">
             <div class="flex-shrink-0">
-                <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2h2a2 2 0 002-2z"></path>
                     </svg>
                 </div>
             </div>
             <div class="flex-1 min-w-0">
-                <h3 class="text-sm font-medium text-text-primary">Install PocketLedger</h3>
-                <p class="text-sm text-text-secondary mt-1">Add to your home screen for quick access</p>
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white">Install PocketLedger</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Add to your home screen for quick access</p>
             </div>
-            <button id="pwa-install-btn" class="btn-primary text-xs px-3 py-1.5">
+            <button id="pwa-install-btn" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors">
                 Install
             </button>
         </div>
-        <button id="pwa-dismiss" class="absolute top-2 right-2 text-text-tertiary hover:text-text-secondary">
+        <button id="pwa-dismiss" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
@@ -179,10 +177,8 @@
             if (userTheme === 'auto') {
                 if (e.matches) {
                     document.documentElement.classList.add('dark');
-                    document.documentElement.setAttribute('data-theme', 'dark');
                 } else {
                     document.documentElement.classList.remove('dark');
-                    document.documentElement.setAttribute('data-theme', 'light');
                 }
             }
         });
@@ -196,7 +192,7 @@
             themeToggleBtn.addEventListener('click', function() {
                 console.log('Theme toggle clicked!');
                 console.log('Current dark class:', document.documentElement.classList.contains('dark'));
-                console.log('Current data-theme:', document.documentElement.getAttribute('data-theme'));
+
                 
                 // Get current theme state
                 const isDark = document.documentElement.classList.contains('dark');
@@ -207,12 +203,10 @@
                 // Update DOM
                 if (newTheme === 'dark') {
                     document.documentElement.classList.add('dark');
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    console.log('Added dark class and set data-theme to dark');
+                    console.log('Added dark class');
                 } else {
                     document.documentElement.classList.remove('dark');
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    console.log('Removed dark class and set data-theme to light');
+                    console.log('Removed dark class');
                 }
                 
                 // Update localStorage
@@ -226,7 +220,7 @@
                 
                 console.log('Switched to', newTheme, 'theme');
                 console.log('Final dark class:', document.documentElement.classList.contains('dark'));
-                console.log('Final data-theme:', document.documentElement.getAttribute('data-theme'));
+
             });
         }
 
