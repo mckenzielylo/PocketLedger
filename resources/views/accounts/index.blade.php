@@ -23,6 +23,31 @@
         </div>
     </div>
 
+    <!-- Information Section -->
+    @if(Auth::user()->settings['default_account_id'])
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+            <div class="px-4 py-3 sm:px-6">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-sm text-blue-800 dark:text-blue-200">
+                        <strong>Default Account:</strong> 
+                        @php
+                            $defaultAccount = Auth::user()->accounts()->find(Auth::user()->settings['default_account_id']);
+                        @endphp
+                        @if($defaultAccount)
+                            <span class="font-medium">{{ $defaultAccount->name }}</span> 
+                            is set as your default account for recurring transactions and quick actions.
+                        @else
+                            Your default account has been removed. Please set a new default account.
+                        @endif
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Account List -->
     <div class="px-4 py-6 sm:px-6">
         @if($accounts->count() > 0)
@@ -63,6 +88,14 @@
                                                 Archived
                                             </span>
                                         @endif
+                                        @if(Auth::user()->settings['default_account_id'] == $account->id)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                Default
+                                            </span>
+                                        @endif
                                     </div>
                                     <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
                                         <span class="capitalize">{{ $account->type }}</span>
@@ -91,13 +124,25 @@
                                 <!-- Action Buttons -->
                                 <div class="flex items-center space-x-2">
                                     @if(!$account->is_archived)
-                                        <form action="{{ route('accounts.default', $account) }}" method="POST" class="inline">
-                                            @csrf
-                                            <button type="submit" 
-                                                    class="text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                                Set Default
-                                            </button>
-                                        </form>
+                                        @if(Auth::user()->settings['default_account_id'] != $account->id)
+                                            <form action="{{ route('accounts.default', $account) }}" method="POST" class="inline">
+                                                @csrf
+                                                <button type="submit" 
+                                                        class="text-xs px-3 py-1.5 border border-blue-300 dark:border-blue-600 rounded text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
+                                                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    Set Default
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="text-xs px-3 py-1.5 border border-blue-200 dark:border-blue-700 rounded text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 cursor-default">
+                                                <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                Current Default
+                                            </span>
+                                        @endif
                                     @endif
                                     
                                     <a href="{{ route('accounts.edit', $account) }}" 
