@@ -134,12 +134,40 @@
                         <div class="card-body">
                             <div class="space-y-4">
                                 @forelse($accounts->take(5) as $account)
-                                    <div class="flex items-center justify-between p-4 bg-background-secondary rounded-lg border border-neutral-700">
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                                         <div class="flex items-center space-x-3">
-                                            <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                                                </svg>
+                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center 
+                                                @if($account->type === 'checking') bg-blue-500
+                                                @elseif($account->type === 'savings') bg-green-500
+                                                @elseif($account->type === 'credit') bg-red-500
+                                                @elseif($account->type === 'investment') bg-purple-500
+                                                @elseif($account->type === 'cash') bg-yellow-500
+                                                @else bg-gray-500 @endif">
+                                                @if($account->type === 'checking')
+                                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                                    </svg>
+                                                @elseif($account->type === 'savings')
+                                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                    </svg>
+                                                @elseif($account->type === 'credit')
+                                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                                    </svg>
+                                                @elseif($account->type === 'investment')
+                                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                                    </svg>
+                                                @elseif($account->type === 'cash')
+                                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                                    </svg>
+                                                @else
+                                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                                    </svg>
+                                                @endif
                                             </div>
                                             <div>
                                                 <h3 class="font-medium text-gray-900 dark:text-white">{{ $account->name }}</h3>
@@ -153,11 +181,11 @@
                                     </div>
                                 @empty
                                     <div class="text-center py-8">
-                                        <div class="w-16 h-16 bg-neutral-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <svg class="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                                            </svg>
-                                        </div>
+                                                                            <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg class="w-8 h-8 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                        </svg>
+                                    </div>
                                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No accounts yet</h3>
                                         <p class="text-gray-600 dark:text-gray-400 mb-4">Create your first account to get started</p>
                                         <a href="{{ route('accounts.create') }}" class="btn-primary">
@@ -182,7 +210,7 @@
                         <div class="card-body">
                             <div class="space-y-3">
                                 @forelse($recentTransactions->take(5) as $transaction)
-                                    <div class="flex items-center justify-between p-3 bg-background-secondary rounded-lg border border-neutral-700">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                                         <div class="flex items-center space-x-3">
                                             <div class="w-8 h-8 rounded-full flex items-center justify-center {{ $transaction->isIncome ? 'bg-success-500/20' : 'bg-warning-500/20' }}">
                                                 <svg class="w-4 h-4 {{ $transaction->isIncome ? 'text-success-400' : 'text-warning-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -203,8 +231,8 @@
                                     </div>
                                 @empty
                                     <div class="text-center py-6">
-                                        <div class="w-12 h-12 bg-neutral-700 rounded-full flex items-center justify-center mx-auto mb-3">
-                                            <svg class="w-6 h-6 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                                             </svg>
                                         </div>
