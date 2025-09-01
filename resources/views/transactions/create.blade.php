@@ -239,6 +239,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const categorySection = document.getElementById('category-section');
     const transferSection = document.getElementById('transfer-section');
     const transactionTypeOptions = document.querySelectorAll('.transaction-type-option');
+    const accountSelect = document.getElementById('account_id');
+    const transferAccountSelect = document.getElementById('transfer_account_id');
+    const form = document.querySelector('form');
     
     function updateTransactionTypeSelection() {
         const selectedType = document.querySelector('input[name="type"]:checked')?.value;
@@ -273,6 +276,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    function validateTransferAccounts() {
+        const selectedType = document.querySelector('input[name="type"]:checked')?.value;
+        
+        if (selectedType === 'transfer') {
+            const accountId = accountSelect.value;
+            const transferAccountId = transferAccountSelect.value;
+            
+            // Remove existing error messages
+            const existingError = transferSection.querySelector('.transfer-error');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Remove error styling
+            transferAccountSelect.classList.remove('border-red-500', 'focus:ring-red-500');
+            transferAccountSelect.classList.add('border-gray-300', 'dark:border-gray-600', 'focus:ring-primary-500');
+            
+            if (accountId && transferAccountId && accountId === transferAccountId) {
+                // Add error styling
+                transferAccountSelect.classList.remove('border-gray-300', 'dark:border-gray-600', 'focus:ring-primary-500');
+                transferAccountSelect.classList.add('border-red-500', 'focus:ring-red-500');
+                
+                // Add error message
+                const errorMessage = document.createElement('p');
+                errorMessage.className = 'mt-2 text-sm text-red-600 dark:text-red-400 transfer-error';
+                errorMessage.textContent = 'Source and destination accounts cannot be the same for transfers.';
+                transferSection.appendChild(errorMessage);
+                
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
     // Handle transaction type selection
     transactionTypeOptions.forEach(option => {
         option.addEventListener('click', function() {
@@ -280,6 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
             radioInput.checked = true;
             updateTransactionTypeSelection();
             toggleSections();
+            validateTransferAccounts();
         });
     });
     
@@ -287,12 +326,30 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('change', function() {
             updateTransactionTypeSelection();
             toggleSections();
+            validateTransferAccounts();
         });
+    });
+    
+    // Handle account selection changes
+    accountSelect.addEventListener('change', validateTransferAccounts);
+    transferAccountSelect.addEventListener('change', validateTransferAccounts);
+    
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        if (!validateTransferAccounts()) {
+            e.preventDefault();
+            // Scroll to the transfer section if there's an error
+            const transferSection = document.getElementById('transfer-section');
+            if (transferSection) {
+                transferSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
     });
     
     // Initialize on page load
     updateTransactionTypeSelection();
     toggleSections();
+    validateTransferAccounts();
 });
 </script>
 @endsection
