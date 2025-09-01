@@ -66,7 +66,7 @@ class TransactionController extends Controller
                 return back()->withErrors(['transfer_account_id' => 'Transfer account is required for transfer transactions.']);
             }
             if ($request->account_id === $request->transfer_account_id) {
-                return back()->withErrors(['transfer_account_id' => 'Transfer accounts must be different.']);
+                return back()->withErrors(['transfer_account_id' => 'Source and destination accounts cannot be the same for transfers.']);
             }
         } else {
             if (empty($request->category_id)) {
@@ -154,7 +154,7 @@ class TransactionController extends Controller
                 return back()->withErrors(['transfer_account_id' => 'Transfer account is required for transfer transactions.']);
             }
             if ($request->account_id === $request->transfer_account_id) {
-                return back()->withErrors(['transfer_account_id' => 'Transfer accounts must be different.']);
+                return back()->withErrors(['transfer_account_id' => 'Source and destination accounts cannot be the same for transfers.']);
             }
         } else {
             if (empty($request->category_id)) {
