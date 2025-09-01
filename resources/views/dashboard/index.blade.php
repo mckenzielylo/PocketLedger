@@ -218,8 +218,8 @@
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ Str::limit($transaction->payee ?: $transaction->category->name, 20) }}</h4>
-                                                <p class="text-xs text-gray-600 dark:text-gray-400">{{ $transaction->account->name }}</p>
+                                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ Str::limit($transaction->payee ?: ($transaction->category ? $transaction->category->name : 'Transfer'), 20) }}</h4>
+                                                <p class="text-xs text-gray-600 dark:text-gray-400">{{ $transaction->account ? $transaction->account->name : 'Unknown Account' }}</p>
                                             </div>
                                         </div>
                                         <div class="text-right">
