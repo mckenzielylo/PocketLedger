@@ -1,12 +1,34 @@
 # =============================================================================
-# Ultra-minimal Dockerfile for maximum compatibility
-# Minimal PHP extensions to avoid build conflicts
+# Ultra-optimized Dockerfile for maximum build speed
+# Multi-stage build to minimize permission operations
 # =============================================================================
 
-FROM php:8.2-fpm-alpine
+# =============================================================================
+# STAGE 1: Node.js Build Stage
+# =============================================================================
+FROM node:18-alpine AS node-builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source files
+COPY . .
+
+# Build assets
+RUN npm run build
 
 # =============================================================================
-# SYSTEM DEPENDENCIES (Minimal set)
+# STAGE 2: PHP Production Stage
+# =============================================================================
+FROM php:8.2-fpm-alpine AS production
+
+# =============================================================================
+# SYSTEM DEPENDENCIES
 # =============================================================================
 RUN apk add --no-cache \
     bash \
@@ -25,15 +47,16 @@ RUN apk add --no-cache \
     nginx
 
 # =============================================================================
-# PHP EXTENSIONS (Absolute minimum)
+# PHP EXTENSIONS
 # =============================================================================
-# Install extensions one by one to avoid conflicts
-RUN docker-php-ext-install pdo pdo_pgsql
-
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd
-
-RUN docker-php-ext-install mbstring zip
+    && docker-php-ext-install -j$(nproc) \
+        pdo \
+        pdo_pgsql \
+        gd \
+        zip \
+        mbstring \
+        bcmath
 
 # =============================================================================
 # COMPOSER
@@ -41,36 +64,46 @@ RUN docker-php-ext-install mbstring zip
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # =============================================================================
-# APPLICATION
+# APPLICATION SETUP
 # =============================================================================
 WORKDIR /var/www/html
-COPY . .
 
 # Set minimal environment for Composer
 ENV APP_ENV=production
 ENV APP_KEY=base64:temp-key-for-build
 ENV DB_CONNECTION=pgsql
 
-# Install dependencies
+# Copy composer files first
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
-RUN npm install && npm run build
+
+# Copy application code (excluding large directories)
+COPY app/ ./app/
+COPY config/ ./config/
+COPY database/ ./database/
+COPY resources/ ./resources/
+COPY routes/ ./routes/
+COPY artisan ./
+COPY .env.example ./
+
+# Copy built assets from Node.js stage
+COPY --from=node-builder /app/public/build ./public/build
 
 # =============================================================================
-# PERMISSIONS
+# DIRECTORY SETUP (Minimal)
 # =============================================================================
-# Create required directories
-RUN mkdir -p /var/www/html/storage/logs \
-    && mkdir -p /var/www/html/storage/framework/cache \
-    && mkdir -p /var/www/html/storage/framework/sessions \
-    && mkdir -p /var/www/html/storage/framework/views \
-    && mkdir -p /var/www/html/bootstrap/cache
+# Create only required directories
+RUN mkdir -p storage/logs \
+    && mkdir -p storage/framework/cache \
+    && mkdir -p storage/framework/sessions \
+    && mkdir -p storage/framework/views \
+    && mkdir -p bootstrap/cache
 
-# Set proper ownership and permissions (selective for performance)
-RUN chown -R www-data:www-data /var/www/html/storage \
-    && chown -R www-data:www-data /var/www/html/bootstrap/cache \
-    && chown -R www-data:www-data /var/www/html/public \
-    && chmod -R 775 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
+# Set ownership only for required directories (much faster)
+RUN chown -R www-data:www-data storage bootstrap/cache public \
+    && chmod -R 775 storage bootstrap/cache
 
 # =============================================================================
 # NGINX & SUPERVISOR

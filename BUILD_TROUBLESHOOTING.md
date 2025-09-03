@@ -72,6 +72,10 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 - **Cause:** composer dump-autoload --optimize fails during build due to missing Laravel environment
 - **Solution:** Use updated Dockerfiles that skip separate dump-autoload step and handle it at runtime
 
+#### 8. Slow chown/chmod operations
+- **Cause:** Recursive permission changes on entire /var/www/html directory including vendor/ and node_modules/
+- **Solution:** Use selective permission changes on only required directories (storage, bootstrap/cache, public)
+
 **Possible Causes & Solutions:**
 
 #### 1. Node.js/npm not found
@@ -100,9 +104,10 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 
 ## Quick Fixes
 
-### Option 1: Use Minimal Dockerfile (Recommended)
+### Option 1: Use Optimized Dockerfile (Recommended)
 ```bash
-# For maximum compatibility, use:
+# For maximum build speed and compatibility:
+# Dockerfile.optimized - Multi-stage with selective permissions
 # Dockerfile.minimal - Absolute minimum extensions
 # Dockerfile.simple - PostgreSQL optimized
 # Dockerfile.render - Full features
@@ -126,13 +131,20 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # Use updated Dockerfiles that handle autoloader optimization at runtime
 ```
 
-### Option 5: Fix Oniguruma Error
+### Option 5: Fix Slow Build Performance
+```bash
+# If chown/chmod operations are taking too long:
+# Use Dockerfile.optimized with selective permissions
+# Or use updated Dockerfiles with selective directory permissions
+```
+
+### Option 6: Fix Oniguruma Error
 ```bash
 # If you get "oniguruma package not met" error:
 # Use Dockerfile.minimal which includes oniguruma-dev
 ```
 
-### Option 6: Test Build Locally
+### Option 7: Test Build Locally
 ```bash
 # Run the build test script
 ./build-test.sh
@@ -140,7 +152,7 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # If it passes locally, the issue is with Docker environment
 ```
 
-### Option 7: Debug Docker Build
+### Option 8: Debug Docker Build
 ```bash
 # Build with verbose output
 docker build --no-cache --progress=plain -t pocketledger .
