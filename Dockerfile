@@ -1,7 +1,8 @@
 # =============================================================================
-# POCKETLEDGER - PRODUCTION DOCKERFILE FOR RENDER.COM
+# POCKETLEDGER - PRODUCTION DOCKERFILE FOR RAILWAY.APP
 # =============================================================================
-# Multi-stage build for optimal production deployment
+# Multi-stage build optimized for Railway.app deployment
+# Railway-specific optimizations and configurations
 # =============================================================================
 
 # =============================================================================
@@ -12,14 +13,17 @@ FROM node:18-alpine AS node-builder
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files first for better caching
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies with clean cache
+RUN npm cache clean --force && npm install
 
 # Copy source files
 COPY . .
+
+# Verify environment
+RUN echo "Node: $(node --version)" && echo "NPM: $(npm --version)"
 
 # Build assets
 RUN npm run build
@@ -48,12 +52,15 @@ RUN apk add --no-cache \
     libzip-dev \
     icu-dev \
     oniguruma-dev \
+    postgresql-dev \
     # Database drivers
     sqlite \
     # Process management
     supervisor \
     # Web server
-    nginx
+    nginx \
+    # Railway-specific utilities
+    ca-certificates
 
 # =============================================================================
 # PHP EXTENSIONS
@@ -107,6 +114,17 @@ COPY --from=node-builder /app/public/build ./public/build
 RUN composer dump-autoload --optimize --no-dev
 
 # =============================================================================
+# RAILWAY-SPECIFIC CONFIGURATIONS
+# =============================================================================
+
+# Create Railway-specific directories
+RUN mkdir -p /var/www/html/storage/logs \
+    && mkdir -p /var/www/html/storage/framework/cache \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/framework/views \
+    && mkdir -p /var/www/html/storage/app/public
+
+# =============================================================================
 # PERMISSIONS & OWNERSHIP
 # =============================================================================
 RUN chown -R www-data:www-data /var/www/html \
@@ -115,41 +133,40 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
 # =============================================================================
-# NGINX CONFIGURATION
+# NGINX CONFIGURATION (Railway-optimized)
 # =============================================================================
-COPY docker/nginx.conf /etc/nginx/nginx.conf
-COPY docker/default.conf /etc/nginx/http.d/default.conf
+COPY docker/railway-nginx.conf /etc/nginx/nginx.conf
 
 # =============================================================================
-# PHP-FPM CONFIGURATION
+# PHP-FPM CONFIGURATION (Railway-optimized)
 # =============================================================================
 COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/php.ini /usr/local/etc/php/php.ini
 
 # =============================================================================
-# SUPERVISOR CONFIGURATION
+# SUPERVISOR CONFIGURATION (Railway-optimized)
 # =============================================================================
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/railway-supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # =============================================================================
-# DOCKER ENTRYPOINT
+# RAILWAY ENTRYPOINT SCRIPT
 # =============================================================================
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY docker/railway-entrypoint.sh /usr/local/bin/railway-entrypoint.sh
+RUN chmod +x /usr/local/bin/railway-entrypoint.sh
 
 # =============================================================================
-# HEALTH CHECK
+# HEALTH CHECK (Railway-compatible)
 # =============================================================================
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:$PORT/health || exit 1
 
 # =============================================================================
-# EXPOSE PORTS
+# EXPOSE PORTS (Railway uses dynamic PORT)
 # =============================================================================
-EXPOSE 80
+EXPOSE $PORT
 
 # =============================================================================
-# START SERVICES
+# RAILWAY STARTUP
 # =============================================================================
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/railway-entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
