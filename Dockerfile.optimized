@@ -118,7 +118,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # STARTUP
 # =============================================================================
 # Use PORT environment variable for Render.com compatibility
-ENV PORT=80
+ENV PORT=10000
 EXPOSE $PORT
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
