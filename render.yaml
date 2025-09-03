@@ -15,7 +15,7 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     plan: starter
-    region: oregon
+
     branch: main
     buildCommand: ""
     startCommand: ""
@@ -199,7 +199,7 @@ services:
   - type: redis
     name: pocketledger-redis
     plan: starter
-    region: oregon
+
     ipAllowList: []
 
   # =============================================================================
@@ -211,7 +211,7 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     plan: starter
-    region: oregon
+
     branch: main
     buildCommand: ""
     autoDeploy: true
