@@ -60,6 +60,10 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 - **Cause:** Missing `oniguruma-dev` package required for `mbstring` extension
 - **Solution:** Use `Dockerfile.minimal` which includes all required packages
 
+#### 5. Composer package discovery error
+- **Cause:** Laravel package discovery fails during build due to missing environment variables
+- **Solution:** Use updated Dockerfiles with proper environment variables and --no-scripts flag
+
 **Possible Causes & Solutions:**
 
 #### 1. Node.js/npm not found
@@ -96,13 +100,19 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # Dockerfile.render - Full features
 ```
 
-### Option 2: Fix Oniguruma Error
+### Option 2: Fix Composer Package Discovery Error
+```bash
+# If you get "package:discover --ansi handling the post-autoload-dump event returned with error code 1":
+# Use Dockerfile.minimal which includes proper environment variables and --no-scripts flag
+```
+
+### Option 3: Fix Oniguruma Error
 ```bash
 # If you get "oniguruma package not met" error:
 # Use Dockerfile.minimal which includes oniguruma-dev
 ```
 
-### Option 3: Test Build Locally
+### Option 4: Test Build Locally
 ```bash
 # Run the build test script
 ./build-test.sh
@@ -110,7 +120,7 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # If it passes locally, the issue is with Docker environment
 ```
 
-### Option 4: Debug Docker Build
+### Option 5: Debug Docker Build
 ```bash
 # Build with verbose output
 docker build --no-cache --progress=plain -t pocketledger .

@@ -59,8 +59,14 @@ WORKDIR /var/www/html
 # Copy application files
 COPY . .
 
+# Set minimal environment for Composer
+ENV APP_ENV=production
+ENV APP_KEY=base64:temp-key-for-build
+ENV DB_CONNECTION=pgsql
+
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN composer dump-autoload --optimize
 
 # Install Node.js dependencies and build assets
 RUN npm install && npm run build

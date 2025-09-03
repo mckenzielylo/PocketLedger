@@ -47,8 +47,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY . .
 
+# Set minimal environment for Composer
+ENV APP_ENV=production
+ENV APP_KEY=base64:temp-key-for-build
+ENV DB_CONNECTION=pgsql
+
 # Install dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN composer dump-autoload --optimize
 RUN npm install && npm run build
 
 # =============================================================================

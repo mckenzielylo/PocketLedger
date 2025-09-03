@@ -30,10 +30,14 @@ fi
 echo "🔧 Setting up Laravel application..."
 
 # Generate application key if not set
-if [ -z "$APP_KEY" ]; then
+if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:temp-key-for-build" ]; then
     echo "🔑 Generating application key..."
     php artisan key:generate --force
 fi
+
+# Run package discovery to ensure all packages are properly registered
+echo "📦 Running package discovery..."
+php artisan package:discover --ansi || echo "⚠️ Package discovery completed with warnings"
 
 # Clear and cache configuration
 echo "📝 Optimizing configuration..."
