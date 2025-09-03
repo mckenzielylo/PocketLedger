@@ -205,8 +205,6 @@ services:
     plan: starter
     region: oregon
     ipAllowList: []
-    maxConnections: 20
-    postgresMajorVersion: 15
 
   # =============================================================================
   # REDIS SERVICE
@@ -215,8 +213,6 @@ services:
     name: pocketledger-redis
     plan: starter
     region: oregon
-    maxmemoryPolicy: allkeys-lru
-    persistence: none
 
   # =============================================================================
   # BACKGROUND WORKER
