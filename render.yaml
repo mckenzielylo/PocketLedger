@@ -94,7 +94,7 @@ services:
       
       # Session Settings
       - key: SESSION_DRIVER
-        value: redis
+        value: file
       - key: SESSION_LIFETIME
         value: 120
       - key: SESSION_ENCRYPT
@@ -106,27 +106,13 @@ services:
       - key: SESSION_SECURE_COOKIE
         value: true
       
-      # Cache Settings (Redis)
+      # Cache Settings (File-based)
       - key: CACHE_STORE
-        value: redis
-      - key: REDIS_CLIENT
-        value: phpredis
-      - key: REDIS_HOST
-        fromService:
-          type: redis
-          name: pocketledger-redis
-          property: host
-      - key: REDIS_PORT
-        fromService:
-          type: redis
-          name: pocketledger-redis
-          property: port
-      - key: REDIS_PASSWORD
-        value: ""
+        value: file
       
       # Queue Settings
       - key: QUEUE_CONNECTION
-        value: redis
+        value: sync
       
       # Broadcasting
       - key: BROADCAST_CONNECTION
