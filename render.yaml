@@ -2,6 +2,7 @@
 # RENDER.COM CONFIGURATION FOR POCKETLEDGER
 # =============================================================================
 # This file configures the deployment settings for Render.com
+# Optimized for production deployment with PostgreSQL and Redis
 # =============================================================================
 
 services:
@@ -19,6 +20,8 @@ services:
     buildCommand: ""
     startCommand: ""
     healthCheckPath: /health
+    autoDeploy: true
+    pullRequestPreviewsEnabled: false
     envVars:
       # Application Settings
       - key: APP_NAME
@@ -34,6 +37,34 @@ services:
           property: host
       - key: APP_KEY
         generateValue: true
+      
+      # Application Locale
+      - key: APP_LOCALE
+        value: en
+      - key: APP_FALLBACK_LOCALE
+        value: en
+      - key: APP_FAKER_LOCALE
+        value: en_US
+      
+      # Maintenance Mode
+      - key: APP_MAINTENANCE_DRIVER
+        value: file
+      
+      # PHP Settings
+      - key: PHP_CLI_SERVER_WORKERS
+        value: 4
+      - key: BCRYPT_ROUNDS
+        value: 12
+      
+      # Logging
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_STACK
+        value: single
+      - key: LOG_DEPRECATIONS_CHANNEL
+        value: null
+      - key: LOG_LEVEL
+        value: error
       
       # Database Settings (PostgreSQL)
       - key: DB_CONNECTION
@@ -58,10 +89,28 @@ services:
         fromDatabase:
           name: pocketledger-db
           property: password
+      - key: DB_FOREIGN_KEYS
+        value: true
+      
+      # Session Settings
+      - key: SESSION_DRIVER
+        value: redis
+      - key: SESSION_LIFETIME
+        value: 120
+      - key: SESSION_ENCRYPT
+        value: false
+      - key: SESSION_PATH
+        value: /
+      - key: SESSION_DOMAIN
+        value: null
+      - key: SESSION_SECURE_COOKIE
+        value: true
       
       # Cache Settings (Redis)
       - key: CACHE_STORE
         value: redis
+      - key: REDIS_CLIENT
+        value: phpredis
       - key: REDIS_HOST
         fromService:
           type: redis
@@ -78,21 +127,23 @@ services:
           name: pocketledger-redis
           property: password
       
-      # Session Settings
-      - key: SESSION_DRIVER
-        value: redis
-      - key: SESSION_LIFETIME
-        value: 120
-      - key: SESSION_SECURE_COOKIE
-        value: true
-      
       # Queue Settings
       - key: QUEUE_CONNECTION
         value: redis
       
-      # Mail Settings
+      # Broadcasting
+      - key: BROADCAST_CONNECTION
+        value: log
+      
+      # File Storage
+      - key: FILESYSTEM_DISK
+        value: local
+      
+      # Mail Settings (Production)
       - key: MAIL_MAILER
         value: smtp
+      - key: MAIL_SCHEME
+        value: tls
       - key: MAIL_HOST
         value: smtp.gmail.com
       - key: MAIL_PORT
@@ -106,15 +157,23 @@ services:
       - key: MAIL_FROM_NAME
         value: PocketLedger
       
-      # File Storage
-      - key: FILESYSTEM_DISK
-        value: local
+      # AWS Configuration (for future S3 storage)
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_DEFAULT_REGION
+        value: us-east-1
+      - key: AWS_BUCKET
+        sync: false
+      - key: AWS_USE_PATH_STYLE_ENDPOINT
+        value: false
       
-      # Security
-      - key: LOG_LEVEL
-        value: error
+      # Vite Configuration
+      - key: VITE_APP_NAME
+        value: PocketLedger
       
-      # PocketLedger Specific
+      # PocketLedger Specific Settings
       - key: DEFAULT_CURRENCY
         value: USD
       - key: DEFAULT_CURRENCY_SYMBOL
@@ -123,6 +182,19 @@ services:
         value: 2048
       - key: ALLOWED_FILE_TYPES
         value: jpg,jpeg,png,pdf
+      
+      # Exchange Rate API (optional)
+      - key: EXCHANGE_RATE_API_KEY
+        sync: false
+      - key: EXCHANGE_RATE_API_URL
+        value: https://api.exchangerate-api.com/v4/latest/
+      
+      # Security Settings
+      - key: SANCTUM_STATEFUL_DOMAINS
+        fromService:
+          type: web
+          name: pocketledger-web
+          property: host
 
   # =============================================================================
   # DATABASE SERVICE
@@ -133,6 +205,8 @@ services:
     plan: starter
     region: oregon
     ipAllowList: []
+    maxConnections: 20
+    postgresMajorVersion: 15
 
   # =============================================================================
   # REDIS SERVICE
@@ -142,6 +216,7 @@ services:
     plan: starter
     region: oregon
     maxmemoryPolicy: allkeys-lru
+    persistence: none
 
   # =============================================================================
   # BACKGROUND WORKER
@@ -155,9 +230,10 @@ services:
     region: oregon
     branch: main
     buildCommand: ""
-    startCommand: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    startCommand: php artisan queue:work --sleep=3 --tries=3 --max-time=3600 --timeout=60
+    autoDeploy: true
     envVars:
-      # Copy all environment variables from web service
+      # Application Settings
       - key: APP_NAME
         value: PocketLedger
       - key: APP_ENV
@@ -169,6 +245,30 @@ services:
           type: web
           name: pocketledger-web
           envVarKey: APP_KEY
+      
+      # Application Locale
+      - key: APP_LOCALE
+        value: en
+      - key: APP_FALLBACK_LOCALE
+        value: en
+      - key: APP_FAKER_LOCALE
+        value: en_US
+      
+      # PHP Settings
+      - key: PHP_CLI_SERVER_WORKERS
+        value: 4
+      - key: BCRYPT_ROUNDS
+        value: 12
+      
+      # Logging
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_STACK
+        value: single
+      - key: LOG_DEPRECATIONS_CHANNEL
+        value: null
+      - key: LOG_LEVEL
+        value: error
       
       # Database Settings
       - key: DB_CONNECTION
@@ -193,10 +293,28 @@ services:
         fromDatabase:
           name: pocketledger-db
           property: password
+      - key: DB_FOREIGN_KEYS
+        value: true
+      
+      # Session Settings
+      - key: SESSION_DRIVER
+        value: redis
+      - key: SESSION_LIFETIME
+        value: 120
+      - key: SESSION_ENCRYPT
+        value: false
+      - key: SESSION_PATH
+        value: /
+      - key: SESSION_DOMAIN
+        value: null
+      - key: SESSION_SECURE_COOKIE
+        value: true
       
       # Cache Settings
       - key: CACHE_STORE
         value: redis
+      - key: REDIS_CLIENT
+        value: phpredis
       - key: REDIS_HOST
         fromService:
           type: redis
@@ -216,3 +334,68 @@ services:
       # Queue Settings
       - key: QUEUE_CONNECTION
         value: redis
+      
+      # Broadcasting
+      - key: BROADCAST_CONNECTION
+        value: log
+      
+      # File Storage
+      - key: FILESYSTEM_DISK
+        value: local
+      
+      # Mail Settings
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_SCHEME
+        value: tls
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@pocketledger.com
+      - key: MAIL_FROM_NAME
+        value: PocketLedger
+      
+      # AWS Configuration
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_DEFAULT_REGION
+        value: us-east-1
+      - key: AWS_BUCKET
+        sync: false
+      - key: AWS_USE_PATH_STYLE_ENDPOINT
+        value: false
+      
+      # Vite Configuration
+      - key: VITE_APP_NAME
+        value: PocketLedger
+      
+      # PocketLedger Specific Settings
+      - key: DEFAULT_CURRENCY
+        value: USD
+      - key: DEFAULT_CURRENCY_SYMBOL
+        value: $
+      - key: MAX_FILE_SIZE
+        value: 2048
+      - key: ALLOWED_FILE_TYPES
+        value: jpg,jpeg,png,pdf
+      
+      # Exchange Rate API
+      - key: EXCHANGE_RATE_API_KEY
+        sync: false
+      - key: EXCHANGE_RATE_API_URL
+        value: https://api.exchangerate-api.com/v4/latest/
+      
+      # Security Settings
+      - key: SANCTUM_STATEFUL_DOMAINS
+        fromService:
+          type: web
+          name: pocketledger-web
+          property: host
