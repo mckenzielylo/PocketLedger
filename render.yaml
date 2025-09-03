@@ -178,3 +178,10 @@ services:
           type: web
           name: pocketledger-web
           property: host
+      
+      # Port Configuration
+      - key: PORT
+        fromService:
+          type: web
+          name: pocketledger-web
+          property: port

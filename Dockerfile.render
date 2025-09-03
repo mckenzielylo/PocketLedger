@@ -107,7 +107,9 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # =============================================================================
 # EXPOSE PORTS
 # =============================================================================
-EXPOSE 80
+# Use PORT environment variable for Render.com compatibility
+ENV PORT=80
+EXPOSE $PORT
 
 # =============================================================================
 # STARTUP

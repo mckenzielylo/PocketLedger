@@ -153,6 +153,15 @@ echo "🎉 PocketLedger initialization complete!"
 echo "🌐 Application is ready to serve requests"
 
 # =============================================================================
+# NGINX CONFIGURATION
+# =============================================================================
+echo "🌐 Configuring Nginx for port ${PORT:-80}..."
+
+# Substitute PORT environment variable in Nginx configuration
+envsubst '${PORT}' < /etc/nginx/http.d/default.conf > /tmp/default.conf
+mv /tmp/default.conf /etc/nginx/http.d/default.conf
+
+# =============================================================================
 # START SERVICES
 # =============================================================================
 exec "$@"

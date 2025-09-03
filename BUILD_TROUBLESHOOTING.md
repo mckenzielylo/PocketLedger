@@ -76,6 +76,10 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 - **Cause:** Recursive permission changes on entire /var/www/html directory including vendor/ and node_modules/
 - **Solution:** Use selective permission changes on only required directories (storage, bootstrap/cache, public)
 
+#### 9. No open HTTP ports detected error
+- **Cause:** Application not listening on the correct port that Render.com expects
+- **Solution:** Use updated Dockerfiles with PORT environment variable support and dynamic Nginx configuration
+
 **Possible Causes & Solutions:**
 
 #### 1. Node.js/npm not found
@@ -138,13 +142,20 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # Or use updated Dockerfiles with selective directory permissions
 ```
 
-### Option 6: Fix Oniguruma Error
+### Option 6: Fix No Open HTTP Ports Error
+```bash
+# If you get "No open HTTP ports detected on 0.0.0.0" error:
+# Use updated Dockerfiles with PORT environment variable support
+# The application will now listen on the correct port for Render.com
+```
+
+### Option 7: Fix Oniguruma Error
 ```bash
 # If you get "oniguruma package not met" error:
 # Use Dockerfile.minimal which includes oniguruma-dev
 ```
 
-### Option 7: Test Build Locally
+### Option 8: Test Build Locally
 ```bash
 # Run the build test script
 ./build-test.sh
@@ -152,7 +163,7 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # If it passes locally, the issue is with Docker environment
 ```
 
-### Option 8: Debug Docker Build
+### Option 9: Debug Docker Build
 ```bash
 # Build with verbose output
 docker build --no-cache --progress=plain -t pocketledger .
