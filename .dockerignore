@@ -1,0 +1,85 @@
+# =============================================================================
+# POCKETLEDGER DOCKER IGNORE FILE
+# =============================================================================
+# This file specifies which files and directories should be excluded
+# from the Docker build context to optimize build performance
+# =============================================================================
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+SETUP.md
+*.md
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules
+vendor
+
+# Build artifacts
+public/build
+public/hot
+public/storage
+
+# Storage and cache
+storage/app/public
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+storage/logs
+bootstrap/cache
+
+# Database
+database/database.sqlite
+database/database.sqlite-journal
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+tests
+phpunit.xml
+.phpunit.result.cache
+
+# Development tools
+.php_cs.cache
+.php-cs-fixer.cache
+.phpstan.neon
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# Logs
+*.log
+
+# Temporary files
+tmp
+temp

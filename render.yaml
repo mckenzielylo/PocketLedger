@@ -1,0 +1,218 @@
+# =============================================================================
+# RENDER.COM CONFIGURATION FOR POCKETLEDGER
+# =============================================================================
+# This file configures the deployment settings for Render.com
+# =============================================================================
+
+services:
+  # =============================================================================
+  # WEB SERVICE
+  # =============================================================================
+  - type: web
+    name: pocketledger-web
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: starter
+    region: oregon
+    branch: main
+    buildCommand: ""
+    startCommand: ""
+    healthCheckPath: /health
+    envVars:
+      # Application Settings
+      - key: APP_NAME
+        value: PocketLedger
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        fromService:
+          type: web
+          name: pocketledger-web
+          property: host
+      - key: APP_KEY
+        generateValue: true
+      
+      # Database Settings (PostgreSQL)
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: pocketledger-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: pocketledger-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: pocketledger-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: pocketledger-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: pocketledger-db
+          property: password
+      
+      # Cache Settings (Redis)
+      - key: CACHE_STORE
+        value: redis
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: pocketledger-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: pocketledger-redis
+          property: port
+      - key: REDIS_PASSWORD
+        fromService:
+          type: redis
+          name: pocketledger-redis
+          property: password
+      
+      # Session Settings
+      - key: SESSION_DRIVER
+        value: redis
+      - key: SESSION_LIFETIME
+        value: 120
+      - key: SESSION_SECURE_COOKIE
+        value: true
+      
+      # Queue Settings
+      - key: QUEUE_CONNECTION
+        value: redis
+      
+      # Mail Settings
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@pocketledger.com
+      - key: MAIL_FROM_NAME
+        value: PocketLedger
+      
+      # File Storage
+      - key: FILESYSTEM_DISK
+        value: local
+      
+      # Security
+      - key: LOG_LEVEL
+        value: error
+      
+      # PocketLedger Specific
+      - key: DEFAULT_CURRENCY
+        value: USD
+      - key: DEFAULT_CURRENCY_SYMBOL
+        value: $
+      - key: MAX_FILE_SIZE
+        value: 2048
+      - key: ALLOWED_FILE_TYPES
+        value: jpg,jpeg,png,pdf
+
+  # =============================================================================
+  # DATABASE SERVICE
+  # =============================================================================
+  - type: pserv
+    name: pocketledger-db
+    env: postgresql
+    plan: starter
+    region: oregon
+    ipAllowList: []
+
+  # =============================================================================
+  # REDIS SERVICE
+  # =============================================================================
+  - type: redis
+    name: pocketledger-redis
+    plan: starter
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+
+  # =============================================================================
+  # BACKGROUND WORKER
+  # =============================================================================
+  - type: worker
+    name: pocketledger-worker
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: starter
+    region: oregon
+    branch: main
+    buildCommand: ""
+    startCommand: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    envVars:
+      # Copy all environment variables from web service
+      - key: APP_NAME
+        value: PocketLedger
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        fromService:
+          type: web
+          name: pocketledger-web
+          envVarKey: APP_KEY
+      
+      # Database Settings
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: pocketledger-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: pocketledger-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: pocketledger-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: pocketledger-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: pocketledger-db
+          property: password
+      
+      # Cache Settings
+      - key: CACHE_STORE
+        value: redis
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: pocketledger-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: pocketledger-redis
+          property: port
+      - key: REDIS_PASSWORD
+        fromService:
+          type: redis
+          name: pocketledger-redis
+          property: password
+      
+      # Queue Settings
+      - key: QUEUE_CONNECTION
+        value: redis
