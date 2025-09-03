@@ -80,17 +80,70 @@ class TransactionController extends Controller
             $receiptPath = $request->file('receipt')->store('receipts', 'public');
         }
 
-        $transaction = $user->transactions()->create([
-            'type' => $request->type,
-            'amount' => $request->amount,
-            'account_id' => $request->account_id,
-            'category_id' => $request->category_id,
-            'transfer_account_id' => $request->transfer_account_id,
-            'occurred_on' => $request->occurred_on,
-            'payee' => $request->payee,
-            'note' => $request->note,
-            'receipt_path' => $receiptPath,
-        ]);
+        // Handle currency conversion for transfers
+        if ($request->type === 'transfer' && $request->transfer_account_id) {
+            $sourceAccount = $user->accounts()->find($request->account_id);
+            $destAccount = $user->accounts()->find($request->transfer_account_id);
+            
+            // Check if currencies are different
+            if ($sourceAccount->currency !== $destAccount->currency) {
+                // Create two separate transactions for cross-currency transfers
+                
+                // 1. Expense transaction in source currency
+                $expenseTransaction = $user->transactions()->create([
+                    'type' => 'expense',
+                    'amount' => $request->amount,
+                    'account_id' => $request->account_id,
+                    'category_id' => $this->getTransferCategoryId($user, 'Transfer Out'),
+                    'occurred_on' => $request->occurred_on,
+                    'payee' => $request->payee ?: "Transfer to {$destAccount->name}",
+                    'note' => $request->note ?: "Transfer to {$destAccount->name} ({$destAccount->currency})",
+                    'receipt_path' => $receiptPath,
+                ]);
+                
+                // 2. Income transaction in destination currency
+                $convertedAmount = $this->convertCurrency($request->amount, $sourceAccount->currency, $destAccount->currency);
+                
+                $incomeTransaction = $user->transactions()->create([
+                    'type' => 'income',
+                    'amount' => $convertedAmount,
+                    'account_id' => $request->transfer_account_id,
+                    'category_id' => $this->getTransferCategoryId($user, 'Transfer In'),
+                    'occurred_on' => $request->occurred_on,
+                    'payee' => $request->payee ?: "Transfer from {$sourceAccount->name}",
+                    'note' => $request->note ?: "Transfer from {$sourceAccount->name} ({$sourceAccount->currency}) - Converted from {$sourceAccount->currency} {$request->amount}",
+                    'receipt_path' => $receiptPath,
+                ]);
+                
+                $transaction = $expenseTransaction; // Use expense transaction as the main one
+            } else {
+                // Same currency transfer - create single transaction
+                $transaction = $user->transactions()->create([
+                    'type' => $request->type,
+                    'amount' => $request->amount,
+                    'account_id' => $request->account_id,
+                    'category_id' => $request->category_id,
+                    'transfer_account_id' => $request->transfer_account_id,
+                    'occurred_on' => $request->occurred_on,
+                    'payee' => $request->payee,
+                    'note' => $request->note,
+                    'receipt_path' => $receiptPath,
+                ]);
+            }
+        } else {
+            // Regular income/expense transaction
+            $transaction = $user->transactions()->create([
+                'type' => $request->type,
+                'amount' => $request->amount,
+                'account_id' => $request->account_id,
+                'category_id' => $request->category_id,
+                'transfer_account_id' => $request->transfer_account_id,
+                'occurred_on' => $request->occurred_on,
+                'payee' => $request->payee,
+                'note' => $request->note,
+                'receipt_path' => $receiptPath,
+            ]);
+        }
 
         // Update account balances
         $account = $user->accounts()->find($request->account_id);
@@ -234,5 +287,38 @@ class TransactionController extends Controller
 
         return redirect()->route('transactions.index')
             ->with('success', 'Transaction deleted successfully.');
+    }
+
+    /**
+     * Convert currency amount using exchange rates.
+     */
+    private function convertCurrency(float $amount, string $fromCurrency, string $toCurrency): float
+    {
+        if ($fromCurrency === $toCurrency) {
+            return $amount;
+        }
+
+        $exchangeRateService = new \App\Services\ExchangeRateService();
+        $convertedAmount = $exchangeRateService->convert($amount, $fromCurrency, $toCurrency);
+        
+        return $convertedAmount ?? $amount; // Fallback to original amount if conversion fails
+    }
+
+    /**
+     * Get or create transfer category.
+     */
+    private function getTransferCategoryId($user, string $categoryName): int
+    {
+        $category = $user->categories()->where('name', $categoryName)->first();
+        
+        if (!$category) {
+            $category = $user->categories()->create([
+                'name' => $categoryName,
+                'type' => $categoryName === 'Transfer In' ? 'income' : 'expense',
+                'color' => '#6B7280',
+            ]);
+        }
+        
+        return $category->id;
     }
 }

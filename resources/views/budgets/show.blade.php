@@ -57,11 +57,35 @@
                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Overall Progress</span>
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ number_format($totalPercentage, 1) }}%</span>
                 </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                    <div class="bg-primary-600 h-3 rounded-full @if($totalPercentage > 100) bg-red-500 @elseif($totalPercentage >= 80) bg-yellow-500 @endif" 
-                         style="width: {{ min($totalPercentage, 100) }}%"></div>
+                
+                <!-- Enhanced Progress Bar with Gridlines -->
+                <div class="relative">
+                    <!-- Background Gridlines -->
+                    <div class="absolute inset-0 flex justify-between items-center pointer-events-none">
+                        <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-30"></div>
+                        <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-30" style="left: 25%"></div>
+                        <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-30" style="left: 50%"></div>
+                        <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-30" style="left: 75%"></div>
+                        <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-30" style="right: 0"></div>
+                    </div>
+                    
+                    <!-- Progress Bar Container -->
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 relative overflow-hidden">
+                        <div class="progress-bar h-4 rounded-full transition-all duration-1000 ease-out @if($totalPercentage > 100) progress-bar-danger @elseif($totalPercentage >= 80) progress-bar-warning @else progress-bar-success @endif" 
+                             style="width: {{ min($totalPercentage, 100) }}%"></div>
+                    </div>
+                    
+                    <!-- Percentage Markers -->
+                    <div class="absolute -top-6 left-0 w-full flex justify-between text-xs text-gray-400 dark:text-gray-500">
+                        <span>0%</span>
+                        <span>25%</span>
+                        <span>50%</span>
+                        <span>75%</span>
+                        <span>100%</span>
+                    </div>
                 </div>
-                <div class="flex justify-between mt-1">
+                
+                <div class="flex justify-between mt-6">
                     <span class="text-xs text-gray-500 dark:text-gray-400">0</span>
                     <span class="text-xs text-gray-500 dark:text-gray-400">{{ number_format($budget->total_limit, 0, ',', '.') }}</span>
                 </div>
@@ -92,15 +116,29 @@
                             </div>
                         </div>
                         
-                        <!-- Progress Bar -->
+                        <!-- Enhanced Progress Bar -->
                         <div class="mb-3">
-                            <div class="flex items-center justify-between mb-1">
+                            <div class="flex items-center justify-between mb-2">
                                 <span class="text-xs text-gray-500 dark:text-gray-400">Progress</span>
                                 <span class="text-xs text-gray-500 dark:text-gray-400">{{ number_format($budgetCategory->percentage, 1) }}%</span>
                             </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                <div class="h-2 rounded-full @if($budgetCategory->spending > $budgetCategory->limit_amount) bg-red-500 @elseif($budgetCategory->percentage >= 80) bg-yellow-500 @else bg-primary-500 @endif" 
-                                     style="width: {{ min($budgetCategory->percentage, 100) }}%"></div>
+                            
+                            <!-- Enhanced Progress Bar with Gridlines -->
+                            <div class="relative">
+                                <!-- Background Gridlines -->
+                                <div class="absolute inset-0 flex justify-between items-center pointer-events-none">
+                                    <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-20"></div>
+                                    <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-20" style="left: 25%"></div>
+                                    <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-20" style="left: 50%"></div>
+                                    <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-20" style="left: 75%"></div>
+                                    <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-20" style="right: 0"></div>
+                                </div>
+                                
+                                <!-- Progress Bar Container -->
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 relative overflow-hidden">
+                                    <div class="category-progress-bar h-3 rounded-full transition-all duration-800 ease-out @if($budgetCategory->spending > $budgetCategory->limit_amount) category-progress-bar-danger @elseif($budgetCategory->percentage >= 80) category-progress-bar-warning @else category-progress-bar-success @endif" 
+                                         style="width: {{ min($budgetCategory->percentage, 100) }}%"></div>
+                                </div>
                             </div>
                         </div>
                         
@@ -168,4 +206,35 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate progress bars on page load
+    const progressBars = document.querySelectorAll('.progress-bar, .category-progress-bar');
+    
+    progressBars.forEach((bar, index) => {
+        // Reset width to 0 for animation
+        const originalWidth = bar.style.width;
+        bar.style.width = '0%';
+        
+        // Animate to original width with staggered delay
+        setTimeout(() => {
+            bar.style.transition = 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+            bar.style.width = originalWidth;
+        }, index * 150); // Stagger animation by 150ms per bar
+    });
+    
+    // Add hover effects for better interactivity
+    progressBars.forEach(bar => {
+        bar.addEventListener('mouseenter', function() {
+            this.style.transform = 'scaleY(1.1)';
+            this.style.transition = 'transform 0.2s ease';
+        });
+        
+        bar.addEventListener('mouseleave', function() {
+            this.style.transform = 'scaleY(1)';
+        });
+    });
+});
+</script>
 @endsection

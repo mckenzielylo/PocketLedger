@@ -88,7 +88,7 @@
                             @foreach($colors as $color)
                                 <label class="relative">
                                     <input type="radio" name="color" value="{{ $color }}" class="sr-only" {{ old('color') === $color ? 'checked' : '' }}>
-                                    <div class="w-8 h-8 rounded-full bg-{{ $color }}-500 cursor-pointer border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-colors color-option" data-color="{{ $color }}"></div>
+                                    <div class="w-8 h-8 rounded-full bg-{{ $color }}-500 cursor-pointer border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 hover:scale-110 color-option {{ old('color') === $color ? 'ring-2 ring-primary-500 ring-offset-2' : '' }}" data-color="{{ $color }}"></div>
                                 </label>
                             @endforeach
                         </div>
@@ -116,9 +116,23 @@
                     <!-- Icon (Optional) -->
                     <div>
                         <label for="icon" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Icon (Optional)</label>
-                        <input type="text" name="icon" id="icon" value="{{ old('icon') }}" placeholder="e.g., fas fa-home"
+                        
+                        <!-- Icon Preview -->
+                        <div class="mb-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center space-x-3">
+                                <div id="icon-preview" class="w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg font-semibold bg-red-500">
+                                    <i id="icon-display" class="fas fa-circle"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Icon Preview</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">This is how your category icon will appear</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="text" name="icon" id="icon" value="{{ old('icon') }}" placeholder="e.g., fas fa-home, fas fa-car, fas fa-utensils"
                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">FontAwesome icon class (e.g., fas fa-home, fas fa-car)</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter a FontAwesome icon class (e.g., fas fa-home). Leave empty to use the first letter of the category name.</p>
                         @error('icon')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
@@ -176,13 +190,38 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateColorSelection() {
         const selectedColor = document.querySelector('input[name="color"]:checked')?.value;
         colorOptions.forEach(option => {
-            option.classList.remove('ring-2', 'ring-primary-500');
+            option.classList.remove('ring-2', 'ring-primary-500', 'ring-offset-2');
         });
         if (selectedColor) {
             const selectedOption = document.querySelector(`[data-color="${selectedColor}"]`);
             if (selectedOption) {
-                selectedOption.classList.add('ring-2', 'ring-primary-500');
+                selectedOption.classList.add('ring-2', 'ring-primary-500', 'ring-offset-2');
             }
+        }
+        updateIconPreview();
+    }
+    
+    function updateIconPreview() {
+        const selectedColor = document.querySelector('input[name="color"]:checked')?.value || 'red';
+        const iconValue = document.getElementById('icon').value.trim();
+        const categoryName = document.getElementById('name').value.trim();
+        const iconPreview = document.getElementById('icon-preview');
+        const iconDisplay = document.getElementById('icon-display');
+        
+        // Update color
+        iconPreview.className = `w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg font-semibold bg-${selectedColor}-500`;
+        
+        // Update icon or fallback to first letter
+        if (iconValue) {
+            iconDisplay.className = iconValue;
+            iconDisplay.style.display = 'block';
+        } else if (categoryName) {
+            iconDisplay.className = '';
+            iconDisplay.textContent = categoryName.charAt(0).toUpperCase();
+            iconDisplay.style.display = 'block';
+        } else {
+            iconDisplay.className = 'fas fa-circle';
+            iconDisplay.style.display = 'block';
         }
     }
     
@@ -222,9 +261,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Handle icon and name input changes for preview
+    document.getElementById('icon').addEventListener('input', updateIconPreview);
+    document.getElementById('name').addEventListener('input', updateIconPreview);
+    
     // Initialize selections
     updateCategoryTypeSelection();
     updateColorSelection();
+    updateIconPreview();
     updateParentOptions();
 });
 </script>

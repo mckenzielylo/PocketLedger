@@ -86,7 +86,7 @@
                 <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span class="text-gray-500 dark:text-gray-400 sm:text-sm">{{ Auth::user()->preferred_currency_symbol }}</span>
+                        <span id="currency-symbol" class="text-gray-500 dark:text-gray-400 sm:text-sm">{{ $transaction->account->currency_symbol }}</span>
                     </div>
                     <input type="number" 
                            name="amount" 
@@ -123,16 +123,82 @@
             <!-- Category Selection (for income/expense) -->
             <div id="category-section" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <label for="category_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
-                <select name="category_id" 
-                        id="category_id" 
-                        class="block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                    <option value="">Select a category</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ old('category_id', $transaction->category_id) == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
+                
+                <!-- Custom Category Dropdown -->
+                <div class="relative">
+                    <button type="button" 
+                            id="category-dropdown-button"
+                            class="relative w-full px-3 py-3 text-left bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <div class="flex items-center space-x-3">
+                            <div id="selected-category-icon" class="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
+                                <i id="selected-category-icon-display" class="fas fa-circle text-gray-400 text-xs"></i>
+                            </div>
+                            <span id="selected-category-text" class="text-gray-500 dark:text-gray-400">Select a category</span>
+                        </div>
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </button>
+                    
+                    <!-- Hidden select for form submission -->
+                    <select name="category_id" 
+                            id="category_id" 
+                            class="hidden">
+                        <option value="">Select a category</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ old('category_id', $transaction->category_id) == $category->id ? 'selected' : '' }}
+                                    data-icon="{{ $category->icon }}"
+                                    data-color="{{ $category->color }}"
+                                    data-name="{{ $category->name }}">
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="category-dropdown-menu" 
+                         class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg hidden max-h-60 overflow-auto">
+                        <div class="py-1">
+                            <button type="button" 
+                                    class="category-option w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center space-x-3"
+                                    data-value=""
+                                    data-icon=""
+                                    data-color=""
+                                    data-name="Select a category">
+                                <div class="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
+                                    <i class="fas fa-circle text-gray-400 text-xs"></i>
+                                </div>
+                                <span class="text-gray-500 dark:text-gray-400">Select a category</span>
+                            </button>
+                            @foreach($categories as $category)
+                                <button type="button" 
+                                        class="category-option w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center space-x-3"
+                                        data-value="{{ $category->id }}"
+                                        data-icon="{{ $category->icon }}"
+                                        data-color="{{ $category->color }}"
+                                        data-name="{{ $category->name }}">
+                                    <div class="w-6 h-6 rounded-full bg-{{ $category->color }}-100 dark:bg-{{ $category->color }}-900 flex items-center justify-center">
+                                        @if($category->icon)
+                                            @if(str_starts_with($category->icon, 'fas ') || str_starts_with($category->icon, 'far ') || str_starts_with($category->icon, 'fab ') || str_starts_with($category->icon, 'fal ') || str_starts_with($category->icon, 'fad '))
+                                                <i class="{{ $category->icon }} text-{{ $category->color }}-600 dark:text-{{ $category->color }}-400 text-xs"></i>
+                                            @else
+                                                <span class="text-xs">{{ $category->icon }}</span>
+                                            @endif
+                                        @else
+                                            <span class="text-{{ $category->color }}-600 dark:text-{{ $category->color }}-400 text-xs font-medium">
+                                                {{ strtoupper(substr($category->name, 0, 1)) }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <span class="text-gray-900 dark:text-white">{{ $category->name }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                
                 @error('category_id')
                     <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
@@ -362,10 +428,82 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Category Dropdown Functionality
+    const categoryDropdownButton = document.getElementById('category-dropdown-button');
+    const categoryDropdownMenu = document.getElementById('category-dropdown-menu');
+    const categorySelect = document.getElementById('category_id');
+    const selectedCategoryIcon = document.getElementById('selected-category-icon');
+    const selectedCategoryIconDisplay = document.getElementById('selected-category-icon-display');
+    const selectedCategoryText = document.getElementById('selected-category-text');
+    
+    function initializeCategoryDropdown() {
+        // Set initial selection if there's a pre-selected value
+        const selectedOption = categorySelect.querySelector('option:checked');
+        if (selectedOption && selectedOption.value) {
+            updateCategorySelection(selectedOption.dataset.icon, selectedOption.dataset.color, selectedOption.dataset.name);
+        }
+    }
+    
+    function updateCategorySelection(icon, color, name) {
+        // Update the hidden select
+        categorySelect.value = name === 'Select a category' ? '' : categorySelect.querySelector(`option[data-name="${name}"]`)?.value || '';
+        
+        // Update the display
+        if (name === 'Select a category') {
+            selectedCategoryIcon.className = 'w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center';
+            selectedCategoryIconDisplay.className = 'fas fa-circle text-gray-400 text-xs';
+            selectedCategoryText.textContent = 'Select a category';
+            selectedCategoryText.className = 'text-gray-500 dark:text-gray-400';
+        } else {
+            selectedCategoryIcon.className = `w-6 h-6 rounded-full bg-${color}-100 dark:bg-${color}-900 flex items-center justify-center`;
+            
+            if (icon) {
+                if (icon.startsWith('fas ') || icon.startsWith('far ') || icon.startsWith('fab ') || icon.startsWith('fal ') || icon.startsWith('fad ')) {
+                    selectedCategoryIconDisplay.className = `${icon} text-${color}-600 dark:text-${color}-400 text-xs`;
+                } else {
+                    selectedCategoryIconDisplay.className = 'text-xs';
+                    selectedCategoryIconDisplay.textContent = icon;
+                }
+            } else {
+                selectedCategoryIconDisplay.className = '';
+                selectedCategoryIconDisplay.textContent = name.charAt(0).toUpperCase();
+                selectedCategoryIconDisplay.className += ` text-${color}-600 dark:text-${color}-400 text-xs font-medium`;
+            }
+            
+            selectedCategoryText.textContent = name;
+            selectedCategoryText.className = 'text-gray-900 dark:text-white';
+        }
+    }
+    
+    // Toggle dropdown
+    categoryDropdownButton.addEventListener('click', function() {
+        categoryDropdownMenu.classList.toggle('hidden');
+    });
+    
+    // Handle category option selection
+    document.querySelectorAll('.category-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const icon = this.dataset.icon;
+            const color = this.dataset.color;
+            const name = this.dataset.name;
+            
+            updateCategorySelection(icon, color, name);
+            categoryDropdownMenu.classList.add('hidden');
+        });
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!categoryDropdownButton.contains(event.target) && !categoryDropdownMenu.contains(event.target)) {
+            categoryDropdownMenu.classList.add('hidden');
+        }
+    });
+    
     // Initialize on page load
     updateTransactionTypeSelection();
     toggleSections();
     validateTransferAccounts();
+    initializeCategoryDropdown();
 });
 </script>
 @endsection

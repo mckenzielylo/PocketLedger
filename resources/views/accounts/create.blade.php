@@ -108,6 +108,16 @@
                     <option value="SGD" {{ old('currency') === 'SGD' ? 'selected' : '' }}>SGD - Singapore Dollar</option>
                     <option value="MYR" {{ old('currency') === 'MYR' ? 'selected' : '' }}>MYR - Malaysian Ringgit</option>
                     <option value="THB" {{ old('currency') === 'THB' ? 'selected' : '' }}>THB - Thai Baht</option>
+                    <option value="CAD" {{ old('currency') === 'CAD' ? 'selected' : '' }}>CAD - Canadian Dollar</option>
+                    <option value="AUD" {{ old('currency') === 'AUD' ? 'selected' : '' }}>AUD - Australian Dollar</option>
+                    <option value="CHF" {{ old('currency') === 'CHF' ? 'selected' : '' }}>CHF - Swiss Franc</option>
+                    <option value="CNY" {{ old('currency') === 'CNY' ? 'selected' : '' }}>CNY - Chinese Yuan</option>
+                    <option value="HKD" {{ old('currency') === 'HKD' ? 'selected' : '' }}>HKD - Hong Kong Dollar</option>
+                    <option value="KRW" {{ old('currency') === 'KRW' ? 'selected' : '' }}>KRW - South Korean Won</option>
+                    <option value="NZD" {{ old('currency') === 'NZD' ? 'selected' : '' }}>NZD - New Zealand Dollar</option>
+                    <option value="INR" {{ old('currency') === 'INR' ? 'selected' : '' }}>INR - Indian Rupee</option>
+                    <option value="PHP" {{ old('currency') === 'PHP' ? 'selected' : '' }}>PHP - Philippine Peso</option>
+                    <option value="VND" {{ old('currency') === 'VND' ? 'selected' : '' }}>VND - Vietnamese Dong</option>
                 </select>
                 @error('currency')
                     <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -205,6 +215,16 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (selectedCurrency === 'SGD') symbol = 'S$';
         else if (selectedCurrency === 'MYR') symbol = 'RM';
         else if (selectedCurrency === 'THB') symbol = '฿';
+        else if (selectedCurrency === 'CAD') symbol = 'C$';
+        else if (selectedCurrency === 'AUD') symbol = 'A$';
+        else if (selectedCurrency === 'CHF') symbol = 'CHF';
+        else if (selectedCurrency === 'CNY') symbol = '¥';
+        else if (selectedCurrency === 'HKD') symbol = 'HK$';
+        else if (selectedCurrency === 'KRW') symbol = '₩';
+        else if (selectedCurrency === 'NZD') symbol = 'NZ$';
+        else if (selectedCurrency === 'INR') symbol = '₹';
+        else if (selectedCurrency === 'PHP') symbol = '₱';
+        else if (selectedCurrency === 'VND') symbol = '₫';
         
         balanceInput.previousElementSibling.querySelector('span').textContent = symbol;
     }

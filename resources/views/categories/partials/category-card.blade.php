@@ -6,7 +6,11 @@
                 <div class="flex-shrink-0">
                     <div class="w-10 h-10 rounded-full bg-{{ $category->color }}-100 dark:bg-{{ $category->color }}-900 flex items-center justify-center">
                         @if($category->icon)
-                            <i class="{{ $category->icon }} text-{{ $category->color }}-600 dark:text-{{ $category->color }}-400 text-lg"></i>
+                            @if(str_starts_with($category->icon, 'fas ') || str_starts_with($category->icon, 'far ') || str_starts_with($category->icon, 'fab ') || str_starts_with($category->icon, 'fal ') || str_starts_with($category->icon, 'fad '))
+                                <i class="{{ $category->icon }} text-{{ $category->color }}-600 dark:text-{{ $category->color }}-400 text-lg"></i>
+                            @else
+                                <span class="text-lg">{{ $category->icon }}</span>
+                            @endif
                         @else
                             <span class="text-{{ $category->color }}-600 dark:text-{{ $category->color }}-400 text-lg font-medium">
                                 {{ strtoupper(substr($category->name, 0, 1)) }}

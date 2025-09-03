@@ -95,6 +95,34 @@ class Account extends Model
     }
 
     /**
+     * Get the currency symbol for this account.
+     */
+    public function getCurrencySymbolAttribute(): string
+    {
+        return match ($this->currency) {
+            'IDR' => 'Rp',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            'SGD' => 'S$',
+            'MYR' => 'RM',
+            'THB' => '฿',
+            'CAD' => 'C$',
+            'AUD' => 'A$',
+            'CHF' => 'CHF',
+            'CNY' => '¥',
+            'HKD' => 'HK$',
+            'KRW' => '₩',
+            'NZD' => 'NZ$',
+            'INR' => '₹',
+            'PHP' => '₱',
+            'VND' => '₫',
+            default => $this->currency,
+        };
+    }
+
+    /**
      * Update the current balance based on transactions.
      */
     public function updateBalance(): void

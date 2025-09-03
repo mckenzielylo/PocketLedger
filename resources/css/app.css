@@ -70,7 +70,8 @@
     }
     
     .btn-secondary {
-        @apply bg-background-secondary hover:bg-background-tertiary text-text-primary font-medium py-2.5 px-4 rounded-lg transition-all duration-200 border border-neutral-600 hover:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-background-primary;
+        background-color: var(--bg-secondary);
+        @apply hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200 border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
     }
     
     .btn-success {
@@ -87,7 +88,8 @@
     
     /* YNAB-style card components */
     .card {
-        @apply bg-card border border-border rounded-lg shadow-sm;
+        background-color: var(--bg-card);
+        @apply border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm;
         margin-bottom: 0;
     }
 
@@ -96,7 +98,7 @@
     }
     
     .card-header {
-        @apply px-6 py-4 border-b border-border;
+        @apply px-6 py-4 border-b border-gray-200 dark:border-gray-700;
     }
 
     .card-header.collapsed {
@@ -108,43 +110,206 @@
     }
     
     .card-footer {
-        @apply px-6 py-4 border-t border-neutral-700 bg-background-secondary rounded-b-xl;
+        @apply px-6 py-4 border-t border-gray-700 dark:border-gray-600 rounded-b-xl;
+        background-color: var(--bg-secondary);
     }
     
     /* YNAB-style form components */
     .form-input {
-        @apply bg-background-secondary border border-neutral-600 text-text-primary placeholder-text-tertiary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+        background-color: var(--bg-secondary);
+        @apply border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
     }
     
     .form-select {
-        @apply bg-background-secondary border border-neutral-600 text-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+        background-color: var(--bg-secondary);
+        @apply border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
     }
     
     .form-textarea {
-        @apply bg-background-secondary border border-neutral-600 text-text-primary placeholder-text-tertiary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none;
+        background-color: var(--bg-secondary);
+        @apply border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none;
     }
     
     .form-checkbox {
-        @apply bg-background-secondary border border-neutral-600 text-primary-500 rounded focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-background-primary;
+        background-color: var(--bg-secondary);
+        @apply border border-gray-300 dark:border-gray-600 text-primary-500 rounded focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
     }
     
     .form-radio {
-        @apply bg-background-secondary border border-neutral-600 text-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-background-primary;
+        background-color: var(--bg-secondary);
+        @apply border border-gray-300 dark:border-gray-600 text-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
     }
     
     /* YNAB-style navigation */
     .nav-link {
-        @apply text-text-secondary hover:text-text-primary px-3 py-2 rounded-lg transition-all duration-200 hover:bg-background-secondary;
+        @apply text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700;
     }
     
     .nav-link-active {
-        @apply text-text-primary bg-primary-500/10 border border-primary-500/20;
+        @apply text-gray-900 dark:text-white bg-primary-500/10 border border-primary-500/20;
     }
     
-    /* YNAB-style status indicators */
-    .status-success {
-        @apply bg-success-500/10 text-success-400 border border-success-500/20;
-    }
+            /* YNAB-style status indicators */
+        .status-success {
+            @apply bg-success-500/10 text-success-400 border border-success-500/20;
+        }
+        
+        /* Enhanced Progress Bars */
+        .progress-bar {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        .progress-bar-success {
+            background: linear-gradient(90deg, #10b981, #059669);
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+        }
+        
+        .progress-bar-warning {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+        }
+        
+        .progress-bar-danger {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Category Progress Bars */
+        .category-progress-bar {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2.5s infinite;
+        }
+        
+        .category-progress-bar-success {
+            background: linear-gradient(90deg, #10b981, #059669);
+            box-shadow: 0 1px 3px rgba(16, 185, 129, 0.2);
+        }
+        
+        .category-progress-bar-warning {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
+        }
+        
+        .category-progress-bar-danger {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            box-shadow: 0 1px 3px rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Shimmer Animation */
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+        
+        /* Budget Card Progress Bars */
+        .budget-card-progress-bar {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 1px 2px rgba(59, 130, 246, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .budget-card-progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        .budget-card-progress-bar-success {
+            background: linear-gradient(90deg, #10b981, #059669);
+            box-shadow: 0 1px 2px rgba(16, 185, 129, 0.2);
+        }
+        
+        .budget-card-progress-bar-warning {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            box-shadow: 0 1px 2px rgba(245, 158, 11, 0.2);
+        }
+        
+        .budget-card-progress-bar-danger {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Dashboard Progress Bars */
+        .dashboard-progress-bar {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 1px 2px rgba(59, 130, 246, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        .dashboard-progress-bar-success {
+            background: linear-gradient(90deg, #10b981, #059669);
+            box-shadow: 0 1px 2px rgba(16, 185, 129, 0.2);
+        }
+        
+        .dashboard-progress-bar-warning {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            box-shadow: 0 1px 2px rgba(245, 158, 11, 0.2);
+        }
+        
+        .dashboard-progress-bar-danger {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Progress Bar Load Animation */
+        .progress-bar, .category-progress-bar, .budget-card-progress-bar, .dashboard-progress-bar {
+            animation: progressLoad 1s ease-out;
+        }
+        
+        @keyframes progressLoad {
+            0% {
+                width: 0% !important;
+            }
+        }
     
     .status-warning {
         @apply bg-warning-500/10 text-warning-400 border border-warning-500/20;

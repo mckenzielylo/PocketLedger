@@ -116,7 +116,7 @@
                             <div class="flex flex-col items-end space-y-3">
                                 <div class="text-right">
                                     <p class="text-2xl font-bold text-gray-900 dark:text-white">
-                                        {{ number_format($account->current_balance, 0, ',', '.') }}
+                                        {{ $account->currency_symbol }} {{ number_format($account->current_balance, 0, ',', '.') }}
                                     </p>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ $account->currency }}</p>
                                 </div>

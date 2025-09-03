@@ -85,7 +85,7 @@
                 <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span class="text-gray-500 dark:text-gray-400 sm:text-sm">{{ Auth::user()->preferred_currency_symbol }}</span>
+                        <span id="currency-symbol" class="text-gray-500 dark:text-gray-400 sm:text-sm">{{ Auth::user()->preferred_currency_symbol }}</span>
                     </div>
                     <input type="number" 
                            name="amount" 
@@ -96,6 +96,7 @@
                            class="block w-full pl-12 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                            placeholder="0.00">
                 </div>
+                <p id="currency-info" class="mt-2 text-sm text-gray-500 dark:text-gray-400">Select an account to see the currency</p>
                 @error('amount')
                     <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
@@ -109,7 +110,9 @@
                         class="block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <option value="">Select an account</option>
                     @foreach($accounts as $account)
-                        <option value="{{ $account->id }}" {{ old('account_id') == $account->id ? 'selected' : '' }}>
+                        <option value="{{ $account->id }}" 
+                                data-currency="{{ $account->currency }}"
+                                {{ old('account_id') == $account->id ? 'selected' : '' }}>
                             {{ $account->name }} ({{ $account->currency }} {{ number_format($account->current_balance, 0, ',', '.') }})
                         </option>
                     @endforeach
@@ -122,16 +125,82 @@
             <!-- Category Selection (for income/expense) -->
             <div id="category-section" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <label for="category_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
-                <select name="category_id" 
-                        id="category_id" 
-                        class="block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                    <option value="">Select a category</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
+                
+                <!-- Custom Category Dropdown -->
+                <div class="relative">
+                    <button type="button" 
+                            id="category-dropdown-button"
+                            class="relative w-full px-3 py-3 text-left bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <div class="flex items-center space-x-3">
+                            <div id="selected-category-icon" class="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
+                                <i id="selected-category-icon-display" class="fas fa-circle text-gray-400 text-xs"></i>
+                            </div>
+                            <span id="selected-category-text" class="text-gray-500 dark:text-gray-400">Select a category</span>
+                        </div>
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </button>
+                    
+                    <!-- Hidden select for form submission -->
+                    <select name="category_id" 
+                            id="category_id" 
+                            class="hidden">
+                        <option value="">Select a category</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}
+                                    data-icon="{{ $category->icon }}"
+                                    data-color="{{ $category->color }}"
+                                    data-name="{{ $category->name }}">
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="category-dropdown-menu" 
+                         class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg hidden max-h-60 overflow-auto">
+                        <div class="py-1">
+                            <button type="button" 
+                                    class="category-option w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center space-x-3"
+                                    data-value=""
+                                    data-icon=""
+                                    data-color=""
+                                    data-name="Select a category">
+                                <div class="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
+                                    <i class="fas fa-circle text-gray-400 text-xs"></i>
+                                </div>
+                                <span class="text-gray-500 dark:text-gray-400">Select a category</span>
+                            </button>
+                            @foreach($categories as $category)
+                                <button type="button" 
+                                        class="category-option w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center space-x-3"
+                                        data-value="{{ $category->id }}"
+                                        data-icon="{{ $category->icon }}"
+                                        data-color="{{ $category->color }}"
+                                        data-name="{{ $category->name }}">
+                                    <div class="w-6 h-6 rounded-full bg-{{ $category->color }}-100 dark:bg-{{ $category->color }}-900 flex items-center justify-center">
+                                        @if($category->icon)
+                                            @if(str_starts_with($category->icon, 'fas ') || str_starts_with($category->icon, 'far ') || str_starts_with($category->icon, 'fab ') || str_starts_with($category->icon, 'fal ') || str_starts_with($category->icon, 'fad '))
+                                                <i class="{{ $category->icon }} text-{{ $category->color }}-600 dark:text-{{ $category->color }}-400 text-xs"></i>
+                                            @else
+                                                <span class="text-xs">{{ $category->icon }}</span>
+                                            @endif
+                                        @else
+                                            <span class="text-{{ $category->color }}-600 dark:text-{{ $category->color }}-400 text-xs font-medium">
+                                                {{ strtoupper(substr($category->name, 0, 1)) }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <span class="text-gray-900 dark:text-white">{{ $category->name }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                
                 @error('category_id')
                     <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
@@ -145,7 +214,9 @@
                         class="block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <option value="">Select destination account</option>
                     @foreach($accounts as $account)
-                        <option value="{{ $account->id }}" {{ old('transfer_account_id') == $account->id ? 'selected' : '' }}>
+                        <option value="{{ $account->id }}" 
+                                data-currency="{{ $account->currency }}"
+                                {{ old('transfer_account_id') == $account->id ? 'selected' : '' }}>
                             {{ $account->name }} ({{ $account->currency }} {{ number_format($account->current_balance, 0, ',', '.') }})
                         </option>
                     @endforeach
@@ -153,6 +224,24 @@
                 @error('transfer_account_id')
                     <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
+            </div>
+
+            <!-- Currency Conversion Info (for transfers between different currencies) -->
+            <div id="currency-conversion-section" class="bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 p-6 hidden">
+                <div class="flex items-center mb-3">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="text-lg font-medium text-blue-900 dark:text-blue-100">Currency Conversion</h3>
+                </div>
+                <div id="conversion-info" class="text-sm text-blue-800 dark:text-blue-200">
+                    <!-- Conversion details will be populated by JavaScript -->
+                </div>
+                <div class="mt-3 p-3 bg-blue-100 dark:bg-blue-800/30 rounded-lg">
+                    <p class="text-xs text-blue-700 dark:text-blue-300">
+                        <strong>Note:</strong> This transfer will create two transactions: one expense in the source currency and one income in the destination currency. The conversion rate is for reference only.
+                    </p>
+                </div>
             </div>
 
             <!-- Date -->
@@ -242,6 +331,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const accountSelect = document.getElementById('account_id');
     const transferAccountSelect = document.getElementById('transfer_account_id');
     const form = document.querySelector('form');
+    const currencySymbol = document.getElementById('currency-symbol');
+    const currencyInfo = document.getElementById('currency-info');
+    const currencyConversionSection = document.getElementById('currency-conversion-section');
+    const conversionInfo = document.getElementById('conversion-info');
     
     function updateTransactionTypeSelection() {
         const selectedType = document.querySelector('input[name="type"]:checked')?.value;
@@ -274,6 +367,168 @@ document.addEventListener('DOMContentLoaded', function() {
             categorySection.classList.remove('hidden');
             transferSection.classList.add('hidden');
         }
+    }
+    
+    function updateCurrencySymbol() {
+        const selectedAccountId = accountSelect.value;
+        const selectedOption = accountSelect.querySelector(`option[value="${selectedAccountId}"]`);
+        
+        if (selectedOption && selectedOption.value) {
+            const currency = selectedOption.getAttribute('data-currency');
+            const accountName = selectedOption.textContent.split(' (')[0];
+            
+            // Update currency symbol
+            let symbol = '$';
+            if (currency === 'IDR') symbol = 'Rp';
+            else if (currency === 'EUR') symbol = '€';
+            else if (currency === 'GBP') symbol = '£';
+            else if (currency === 'JPY') symbol = '¥';
+            else if (currency === 'SGD') symbol = 'S$';
+            else if (currency === 'MYR') symbol = 'RM';
+            else if (currency === 'THB') symbol = '฿';
+            else if (currency === 'CAD') symbol = 'C$';
+            else if (currency === 'AUD') symbol = 'A$';
+            else if (currency === 'CHF') symbol = 'CHF';
+            else if (currency === 'CNY') symbol = '¥';
+            else if (currency === 'HKD') symbol = 'HK$';
+            else if (currency === 'KRW') symbol = '₩';
+            else if (currency === 'NZD') symbol = 'NZ$';
+            else if (currency === 'INR') symbol = '₹';
+            else if (currency === 'PHP') symbol = '₱';
+            else if (currency === 'VND') symbol = '₫';
+            
+            currencySymbol.textContent = symbol;
+            currencyInfo.textContent = `Amount will be recorded in ${currency} for ${accountName}`;
+        } else {
+            currencySymbol.textContent = '{{ Auth::user()->preferred_currency_symbol }}';
+            currencyInfo.textContent = 'Select an account to see the currency';
+        }
+    }
+    
+    function updateCurrencyConversion() {
+        const selectedType = document.querySelector('input[name="type"]:checked')?.value;
+        
+        if (selectedType === 'transfer') {
+            const accountId = accountSelect.value;
+            const transferAccountId = transferAccountSelect.value;
+            const amount = parseFloat(document.getElementById('amount').value) || 0;
+            
+            if (accountId && transferAccountId && accountId !== transferAccountId && amount > 0) {
+                const sourceOption = accountSelect.querySelector(`option[value="${accountId}"]`);
+                const destOption = transferAccountSelect.querySelector(`option[value="${transferAccountId}"]`);
+                
+                if (sourceOption && destOption) {
+                    const sourceCurrency = sourceOption.getAttribute('data-currency');
+                    const destCurrency = destOption.getAttribute('data-currency');
+                    
+                    if (sourceCurrency !== destCurrency) {
+                        // Show conversion section
+                        currencyConversionSection.classList.remove('hidden');
+                        
+                        // Fetch conversion rate (mock for now)
+                        const conversionRate = getMockConversionRate(sourceCurrency, destCurrency);
+                        const convertedAmount = amount * conversionRate;
+                        
+                        // Update conversion info
+                        conversionInfo.innerHTML = `
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span>Source Amount:</span>
+                                    <span class="font-medium">${getCurrencySymbol(sourceCurrency)} ${amount.toFixed(2)} ${sourceCurrency}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Exchange Rate:</span>
+                                    <span class="font-medium">1 ${sourceCurrency} = ${conversionRate.toFixed(6)} ${destCurrency}</span>
+                                </div>
+                                <div class="flex justify-between border-t border-blue-200 dark:border-blue-700 pt-2">
+                                    <span>Converted Amount:</span>
+                                    <span class="font-bold text-blue-900 dark:text-blue-100">${getCurrencySymbol(destCurrency)} ${convertedAmount.toFixed(2)} ${destCurrency}</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Same currency, hide conversion section
+                        currencyConversionSection.classList.add('hidden');
+                    }
+                }
+            } else {
+                // Hide conversion section
+                currencyConversionSection.classList.add('hidden');
+            }
+        } else {
+            // Hide conversion section for non-transfer transactions
+            currencyConversionSection.classList.add('hidden');
+        }
+    }
+    
+    function getMockConversionRate(fromCurrency, toCurrency) {
+        // Mock exchange rates - in production, this would fetch from your API
+        const rates = {
+            'USD_IDR': 15000.00,
+            'USD_EUR': 0.85,
+            'USD_GBP': 0.73,
+            'USD_JPY': 110.00,
+            'USD_SGD': 1.35,
+            'USD_MYR': 4.20,
+            'USD_THB': 33.00,
+            'USD_CAD': 1.25,
+            'USD_AUD': 1.40,
+            'USD_CHF': 0.92,
+            'USD_CNY': 6.45,
+            'USD_HKD': 7.80,
+            'USD_KRW': 1180.00,
+            'USD_NZD': 1.45,
+            'USD_INR': 75.00,
+            'USD_PHP': 50.00,
+            'USD_VND': 23000.00,
+            'EUR_USD': 1.18,
+            'EUR_IDR': 17650.00,
+            'EUR_GBP': 0.86,
+            'EUR_JPY': 129.00,
+            'EUR_SGD': 1.59,
+            'EUR_MYR': 4.94,
+            'EUR_THB': 38.80,
+            'EUR_CAD': 1.47,
+            'EUR_AUD': 1.65,
+            'EUR_CHF': 1.08,
+            'EUR_CNY': 7.59,
+            'EUR_HKD': 9.20,
+            'EUR_KRW': 1390.00,
+            'EUR_NZD': 1.71,
+            'EUR_INR': 88.50,
+            'EUR_PHP': 59.00,
+            'EUR_VND': 27100.00,
+            'IDR_USD': 0.000067,
+            'IDR_EUR': 0.000057,
+            'IDR_GBP': 0.000049,
+            'IDR_JPY': 0.0073,
+            'IDR_SGD': 0.000090,
+            'IDR_MYR': 0.00028,
+            'IDR_THB': 0.0022,
+            'IDR_CAD': 0.000083,
+            'IDR_AUD': 0.000093,
+            'IDR_CHF': 0.000061,
+            'IDR_CNY': 0.00043,
+            'IDR_HKD': 0.00052,
+            'IDR_KRW': 0.079,
+            'IDR_NZD': 0.000097,
+            'IDR_INR': 0.005,
+            'IDR_PHP': 0.0033,
+            'IDR_VND': 1.53,
+        };
+        
+        const key = `${fromCurrency}_${toCurrency}`;
+        return rates[key] || 1.0;
+    }
+    
+    function getCurrencySymbol(currency) {
+        const symbols = {
+            'IDR': 'Rp', 'USD': '$', 'EUR': '€', 'GBP': '£', 'JPY': '¥',
+            'SGD': 'S$', 'MYR': 'RM', 'THB': '฿', 'CAD': 'C$', 'AUD': 'A$',
+            'CHF': 'CHF', 'CNY': '¥', 'HKD': 'HK$', 'KRW': '₩', 'NZD': 'NZ$',
+            'INR': '₹', 'PHP': '₱', 'VND': '₫'
+        };
+        return symbols[currency] || currency;
     }
     
     function validateTransferAccounts() {
@@ -319,6 +574,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateTransactionTypeSelection();
             toggleSections();
             validateTransferAccounts();
+            updateCurrencyConversion();
         });
     });
     
@@ -327,12 +583,23 @@ document.addEventListener('DOMContentLoaded', function() {
             updateTransactionTypeSelection();
             toggleSections();
             validateTransferAccounts();
+            updateCurrencyConversion();
         });
     });
     
     // Handle account selection changes
-    accountSelect.addEventListener('change', validateTransferAccounts);
-    transferAccountSelect.addEventListener('change', validateTransferAccounts);
+    accountSelect.addEventListener('change', function() {
+        updateCurrencySymbol();
+        validateTransferAccounts();
+        updateCurrencyConversion();
+    });
+    transferAccountSelect.addEventListener('change', function() {
+        validateTransferAccounts();
+        updateCurrencyConversion();
+    });
+    
+    // Handle amount changes for currency conversion
+    document.getElementById('amount').addEventListener('input', updateCurrencyConversion);
     
     // Form submission validation
     form.addEventListener('submit', function(e) {
@@ -346,10 +613,84 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Category Dropdown Functionality
+    const categoryDropdownButton = document.getElementById('category-dropdown-button');
+    const categoryDropdownMenu = document.getElementById('category-dropdown-menu');
+    const categorySelect = document.getElementById('category_id');
+    const selectedCategoryIcon = document.getElementById('selected-category-icon');
+    const selectedCategoryIconDisplay = document.getElementById('selected-category-icon-display');
+    const selectedCategoryText = document.getElementById('selected-category-text');
+    
+    function initializeCategoryDropdown() {
+        // Set initial selection if there's a pre-selected value
+        const selectedOption = categorySelect.querySelector('option:checked');
+        if (selectedOption && selectedOption.value) {
+            updateCategorySelection(selectedOption.dataset.icon, selectedOption.dataset.color, selectedOption.dataset.name);
+        }
+    }
+    
+    function updateCategorySelection(icon, color, name) {
+        // Update the hidden select
+        categorySelect.value = name === 'Select a category' ? '' : categorySelect.querySelector(`option[data-name="${name}"]`)?.value || '';
+        
+        // Update the display
+        if (name === 'Select a category') {
+            selectedCategoryIcon.className = 'w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center';
+            selectedCategoryIconDisplay.className = 'fas fa-circle text-gray-400 text-xs';
+            selectedCategoryText.textContent = 'Select a category';
+            selectedCategoryText.className = 'text-gray-500 dark:text-gray-400';
+        } else {
+            selectedCategoryIcon.className = `w-6 h-6 rounded-full bg-${color}-100 dark:bg-${color}-900 flex items-center justify-center`;
+            
+            if (icon) {
+                if (icon.startsWith('fas ') || icon.startsWith('far ') || icon.startsWith('fab ') || icon.startsWith('fal ') || icon.startsWith('fad ')) {
+                    selectedCategoryIconDisplay.className = `${icon} text-${color}-600 dark:text-${color}-400 text-xs`;
+                } else {
+                    selectedCategoryIconDisplay.className = 'text-xs';
+                    selectedCategoryIconDisplay.textContent = icon;
+                }
+            } else {
+                selectedCategoryIconDisplay.className = '';
+                selectedCategoryIconDisplay.textContent = name.charAt(0).toUpperCase();
+                selectedCategoryIconDisplay.className += ` text-${color}-600 dark:text-${color}-400 text-xs font-medium`;
+            }
+            
+            selectedCategoryText.textContent = name;
+            selectedCategoryText.className = 'text-gray-900 dark:text-white';
+        }
+    }
+    
+    // Toggle dropdown
+    categoryDropdownButton.addEventListener('click', function() {
+        categoryDropdownMenu.classList.toggle('hidden');
+    });
+    
+    // Handle category option selection
+    document.querySelectorAll('.category-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const icon = this.dataset.icon;
+            const color = this.dataset.color;
+            const name = this.dataset.name;
+            
+            updateCategorySelection(icon, color, name);
+            categoryDropdownMenu.classList.add('hidden');
+        });
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!categoryDropdownButton.contains(event.target) && !categoryDropdownMenu.contains(event.target)) {
+            categoryDropdownMenu.classList.add('hidden');
+        }
+    });
+    
     // Initialize on page load
     updateTransactionTypeSelection();
     toggleSections();
+    updateCurrencySymbol();
     validateTransferAccounts();
+    updateCurrencyConversion();
+    initializeCategoryDropdown();
 });
 </script>
 @endsection

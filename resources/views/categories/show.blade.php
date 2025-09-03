@@ -37,7 +37,11 @@
                     <div class="flex-shrink-0">
                         <div class="w-16 h-16 rounded-full bg-{{ $category->color }}-100 dark:bg-{{ $category->color }}-900 flex items-center justify-center">
                             @if($category->icon)
-                                <i class="{{ $category->icon }} text-{{ $category->color }}-600 dark:text-{{ $category->color }}-400 text-2xl"></i>
+                                @if(str_starts_with($category->icon, 'fas ') || str_starts_with($category->icon, 'far ') || str_starts_with($category->icon, 'fab ') || str_starts_with($category->icon, 'fal ') || str_starts_with($category->icon, 'fad '))
+                                    <i class="{{ $category->icon }} text-{{ $category->color }}-600 dark:text-{{ $category->color }}-400 text-2xl"></i>
+                                @else
+                                    <span class="text-2xl">{{ $category->icon }}</span>
+                                @endif
                             @else
                                 <span class="text-{{ $category->color }}-600 dark:text-{{ $category->color }}-400 text-2xl font-bold">
                                     {{ strtoupper(substr($category->name, 0, 1)) }}

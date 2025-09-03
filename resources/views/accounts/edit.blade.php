@@ -120,17 +120,7 @@
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Balance</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span class="text-gray-500 dark:text-gray-400 sm:text-sm">
-                            @if($account->currency === 'IDR') Rp
-                            @elseif($account->currency === 'EUR') €
-                            @elseif($account->currency === 'GBP') £
-                            @elseif($account->currency === 'JPY') ¥
-                            @elseif($account->currency === 'SGD') S$
-                            @elseif($account->currency === 'MYR') RM
-                            @elseif($account->currency === 'THB') ฿
-                            @else $
-                            @endif
-                        </span>
+                        <span class="text-gray-500 dark:text-gray-400 sm:text-sm">{{ $account->currency_symbol }}</span>
                     </div>
                     <input type="text" 
                            value="{{ number_format($account->current_balance, 0, ',', '.') }}"

@@ -165,7 +165,7 @@
                                             </div>
                                         </div>
                                         <div class="text-right">
-                                            <p class="font-semibold text-gray-900 dark:text-white">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($account->current_balance, 2) }}</p>
+                                            <p class="font-semibold text-gray-900 dark:text-white">{{ $account->currency_symbol }} {{ number_format($account->current_balance, 2) }}</p>
                                             <p class="text-sm text-gray-600 dark:text-gray-400">{{ $account->currency }}</p>
                                         </div>
                                     </div>
@@ -214,7 +214,7 @@
                                         </div>
                                         <div class="text-right">
                                             <p class="text-sm font-semibold {{ $transaction->isIncome ? 'text-success-400' : 'text-warning-400' }}">
-                                                {{ $transaction->isIncome ? '+' : '-' }}{{ Auth::user()->preferred_currency_symbol }}{{ number_format($transaction->amount, 2) }}
+                                                {{ $transaction->isIncome ? '+' : '-' }}{{ $transaction->account->currency_symbol }} {{ number_format($transaction->amount, 2) }}
                                             </p>
                                             <p class="text-xs text-gray-600 dark:text-gray-400">{{ $transaction->occurred_on->format('M j') }}</p>
                                         </div>
@@ -251,9 +251,22 @@
                                                 <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $budget->month }}</span>
                                                 <span class="text-sm text-gray-600 dark:text-gray-400">{{ Auth::user()->preferred_currency_symbol }}{{ number_format($budget->total_spent, 2) }} / {{ Auth::user()->preferred_currency_symbol }}{{ number_format($budget->total_limit, 2) }}</span>
                                             </div>
-                                            <div class="w-full bg-neutral-700 rounded-full h-2">
-                                                <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" 
-                                                     style="width: {{ min(100, ($budget->total_spent / $budget->total_limit) * 100) }}%"></div>
+                                            <!-- Enhanced Progress Bar -->
+                                            <div class="relative">
+                                                <!-- Background Gridlines -->
+                                                <div class="absolute inset-0 flex justify-between items-center pointer-events-none">
+                                                    <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-20"></div>
+                                                    <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-20" style="left: 25%"></div>
+                                                    <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-20" style="left: 50%"></div>
+                                                    <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-20" style="left: 75%"></div>
+                                                    <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-20" style="right: 0"></div>
+                                                </div>
+                                                
+                                                <!-- Progress Bar Container -->
+                                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 relative overflow-hidden">
+                                                    <div class="dashboard-progress-bar h-2 rounded-full transition-all duration-800 ease-out dashboard-progress-bar-success" 
+                                                         style="width: {{ min(100, ($budget->total_spent / $budget->total_limit) * 100) }}%"></div>
+                                                </div>
                                             </div>
                                         </div>
                                     @endforeach
@@ -266,3 +279,34 @@
         </div>
     </div>
 </x-app-layout>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate dashboard progress bars on page load
+    const dashboardProgressBars = document.querySelectorAll('.dashboard-progress-bar');
+    
+    dashboardProgressBars.forEach((bar, index) => {
+        // Reset width to 0 for animation
+        const originalWidth = bar.style.width;
+        bar.style.width = '0%';
+        
+        // Animate to original width with staggered delay
+        setTimeout(() => {
+            bar.style.transition = 'width 1s cubic-bezier(0.4, 0, 0.2, 1)';
+            bar.style.width = originalWidth;
+        }, index * 150); // Stagger animation by 150ms per bar
+    });
+    
+    // Add hover effects for better interactivity
+    dashboardProgressBars.forEach(bar => {
+        bar.addEventListener('mouseenter', function() {
+            this.style.transform = 'scaleY(1.1)';
+            this.style.transition = 'transform 0.2s ease';
+        });
+        
+        bar.addEventListener('mouseleave', function() {
+            this.style.transform = 'scaleY(1)';
+        });
+    });
+});
+</script>

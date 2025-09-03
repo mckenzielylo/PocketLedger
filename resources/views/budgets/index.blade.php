@@ -80,9 +80,22 @@
                                             {{ Auth::user()->preferred_currency_symbol }} {{ number_format($spending, 0, ',', '.') }}
                                             <span class="text-gray-500 dark:text-gray-400">/ {{ number_format($budgetCategory->limit_amount, 0, ',', '.') }}</span>
                                         </p>
-                                        <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1">
-                                            <div class="bg-primary-600 h-2 rounded-full @if($isOverBudget) bg-red-500 @elseif($percentage >= 80) bg-yellow-500 @endif" 
-                                                 style="width: {{ min($percentage, 100) }}%"></div>
+                                        <!-- Enhanced Progress Bar -->
+                                        <div class="relative w-24 mt-1">
+                                            <!-- Background Gridlines -->
+                                            <div class="absolute inset-0 flex justify-between items-center pointer-events-none">
+                                                <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-15"></div>
+                                                <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-15" style="left: 25%"></div>
+                                                <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-15" style="left: 50%"></div>
+                                                <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-15" style="left: 75%"></div>
+                                                <div class="w-px h-full bg-gray-300 dark:bg-gray-600 opacity-15" style="right: 0"></div>
+                                            </div>
+                                            
+                                            <!-- Progress Bar Container -->
+                                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 relative overflow-hidden">
+                                                <div class="budget-card-progress-bar h-2 rounded-full transition-all duration-800 ease-out @if($isOverBudget) budget-card-progress-bar-danger @elseif($percentage >= 80) budget-card-progress-bar-warning @else budget-card-progress-bar-success @endif" 
+                                                     style="width: {{ min($percentage, 100) }}%"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -152,4 +165,35 @@
         </svg>
     </a>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate progress bars on page load
+    const progressBars = document.querySelectorAll('.budget-card-progress-bar');
+    
+    progressBars.forEach((bar, index) => {
+        // Reset width to 0 for animation
+        const originalWidth = bar.style.width;
+        bar.style.width = '0%';
+        
+        // Animate to original width with staggered delay
+        setTimeout(() => {
+            bar.style.transition = 'width 1s cubic-bezier(0.4, 0, 0.2, 1)';
+            bar.style.width = originalWidth;
+        }, index * 100); // Stagger animation by 100ms per bar
+    });
+    
+    // Add hover effects for better interactivity
+    progressBars.forEach(bar => {
+        bar.addEventListener('mouseenter', function() {
+            this.style.transform = 'scaleY(1.2)';
+            this.style.transition = 'transform 0.2s ease';
+        });
+        
+        bar.addEventListener('mouseleave', function() {
+            this.style.transform = 'scaleY(1)';
+        });
+    });
+});
+</script>
 @endsection

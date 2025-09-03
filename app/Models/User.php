@@ -137,6 +137,16 @@ class User extends Authenticatable
             'SGD' => 'S$',
             'MYR' => 'RM',
             'THB' => '฿',
+            'CAD' => 'C$',
+            'AUD' => 'A$',
+            'CHF' => 'CHF',
+            'CNY' => '¥',
+            'HKD' => 'HK$',
+            'KRW' => '₩',
+            'NZD' => 'NZ$',
+            'INR' => '₹',
+            'PHP' => '₱',
+            'VND' => '₫',
             default => $currency,
         };
     }
