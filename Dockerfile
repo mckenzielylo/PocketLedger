@@ -53,8 +53,7 @@ RUN apk add --no-cache \
     icu-dev \
     oniguruma-dev \
     postgresql-dev \
-    # Database drivers
-    sqlite \
+
     # Process management
     supervisor \
     # Web server
@@ -73,8 +72,6 @@ RUN docker-php-ext-configure gd \
 
 RUN docker-php-ext-install -j$(nproc) \
     pdo \
-    pdo_sqlite \
-    pdo_mysql \
     pdo_pgsql \
     gd \
     zip \

@@ -31,7 +31,7 @@ RUN apk add --no-cache \
     icu-dev \
     oniguruma-dev \
     postgresql-dev \
-    sqlite-dev \
+
     # Supervisor for process management
     supervisor \
     nginx
@@ -40,7 +40,7 @@ RUN apk add --no-cache \
 # PHP EXTENSIONS
 # =============================================================================
 # Install PHP extensions one by one to avoid conflicts
-RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql pdo_pgsql
+RUN docker-php-ext-install -j$(nproc) pdo pdo_pgsql
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd
