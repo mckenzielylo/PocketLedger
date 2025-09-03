@@ -68,6 +68,10 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 - **Cause:** Laravel bootstrap/cache directory missing or not writable
 - **Solution:** Use updated Dockerfiles that create required directories with proper permissions
 
+#### 7. Composer dump-autoload error
+- **Cause:** composer dump-autoload --optimize fails during build due to missing Laravel environment
+- **Solution:** Use updated Dockerfiles that skip separate dump-autoload step and handle it at runtime
+
 **Possible Causes & Solutions:**
 
 #### 1. Node.js/npm not found
@@ -116,13 +120,19 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # Use updated Dockerfiles that create required directories with proper permissions
 ```
 
-### Option 4: Fix Oniguruma Error
+### Option 4: Fix Composer Dump-Autoload Error
+```bash
+# If you get "composer dump-autoload --optimize" error:
+# Use updated Dockerfiles that handle autoloader optimization at runtime
+```
+
+### Option 5: Fix Oniguruma Error
 ```bash
 # If you get "oniguruma package not met" error:
 # Use Dockerfile.minimal which includes oniguruma-dev
 ```
 
-### Option 5: Test Build Locally
+### Option 6: Test Build Locally
 ```bash
 # Run the build test script
 ./build-test.sh
@@ -130,7 +140,7 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # If it passes locally, the issue is with Docker environment
 ```
 
-### Option 6: Debug Docker Build
+### Option 7: Debug Docker Build
 ```bash
 # Build with verbose output
 docker build --no-cache --progress=plain -t pocketledger .

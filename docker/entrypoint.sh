@@ -39,6 +39,10 @@ fi
 echo "📦 Running package discovery..."
 php artisan package:discover --ansi || echo "⚠️ Package discovery completed with warnings"
 
+# Optimize autoloader for better performance
+echo "⚡ Optimizing autoloader..."
+composer dump-autoload --optimize --no-dev
+
 # Clear and cache configuration
 echo "📝 Optimizing configuration..."
 php artisan config:clear
