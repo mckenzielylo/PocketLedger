@@ -56,6 +56,10 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 - **Cause:** Some Alpine packages might be incompatible
 - **Solution:** Try the ultra-simple Dockerfile with minimal extensions
 
+#### 4. Oniguruma package missing
+- **Cause:** Missing `oniguruma-dev` package required for `mbstring` extension
+- **Solution:** Use `Dockerfile.minimal` which includes all required packages
+
 **Possible Causes & Solutions:**
 
 #### 1. Node.js/npm not found
@@ -84,17 +88,18 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 
 ## Quick Fixes
 
-### Option 1: Use Single-Stage Dockerfile
+### Option 1: Use Minimal Dockerfile (Recommended)
 ```bash
-# For Render.com, use one of these:
-# Option A: Dockerfile.render (full features)
-# Option B: Dockerfile.simple (minimal, most reliable)
+# For maximum compatibility, use:
+# Dockerfile.minimal - Absolute minimum extensions
+# Dockerfile.simple - PostgreSQL optimized
+# Dockerfile.render - Full features
 ```
 
-### Option 2: Use Ultra-Simple Dockerfile
+### Option 2: Fix Oniguruma Error
 ```bash
-# Use the minimal version for maximum compatibility
-# In Render.com settings, specify: Dockerfile.simple
+# If you get "oniguruma package not met" error:
+# Use Dockerfile.minimal which includes oniguruma-dev
 ```
 
 ### Option 3: Test Build Locally

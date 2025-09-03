@@ -31,7 +31,6 @@ RUN apk add --no-cache \
     icu-dev \
     oniguruma-dev \
     postgresql-dev \
-
     # Supervisor for process management
     supervisor \
     nginx

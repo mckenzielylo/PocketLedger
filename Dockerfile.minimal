@@ -1,12 +1,12 @@
 # =============================================================================
-# Ultra-simple Dockerfile for Render.com deployment
+# Ultra-minimal Dockerfile for maximum compatibility
 # Minimal PHP extensions to avoid build conflicts
 # =============================================================================
 
 FROM php:8.2-fpm-alpine
 
 # =============================================================================
-# SYSTEM DEPENDENCIES
+# SYSTEM DEPENDENCIES (Minimal set)
 # =============================================================================
 RUN apk add --no-cache \
     bash \
@@ -25,16 +25,15 @@ RUN apk add --no-cache \
     nginx
 
 # =============================================================================
-# PHP EXTENSIONS (PostgreSQL optimized)
+# PHP EXTENSIONS (Absolute minimum)
 # =============================================================================
+# Install extensions one by one to avoid conflicts
+RUN docker-php-ext-install pdo pdo_pgsql
+
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        pdo \
-        pdo_pgsql \
-        gd \
-        zip \
-        mbstring \
-        bcmath
+    && docker-php-ext-install gd
+
+RUN docker-php-ext-install mbstring zip
 
 # =============================================================================
 # COMPOSER
