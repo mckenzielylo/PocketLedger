@@ -64,6 +64,10 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 - **Cause:** Laravel package discovery fails during build due to missing environment variables
 - **Solution:** Use updated Dockerfiles with proper environment variables and --no-scripts flag
 
+#### 6. Bootstrap cache directory error
+- **Cause:** Laravel bootstrap/cache directory missing or not writable
+- **Solution:** Use updated Dockerfiles that create required directories with proper permissions
+
 **Possible Causes & Solutions:**
 
 #### 1. Node.js/npm not found
@@ -106,13 +110,19 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # Use Dockerfile.minimal which includes proper environment variables and --no-scripts flag
 ```
 
-### Option 3: Fix Oniguruma Error
+### Option 3: Fix Bootstrap Cache Directory Error
+```bash
+# If you get "bootstrap/cache directory must be present and writable" error:
+# Use updated Dockerfiles that create required directories with proper permissions
+```
+
+### Option 4: Fix Oniguruma Error
 ```bash
 # If you get "oniguruma package not met" error:
 # Use Dockerfile.minimal which includes oniguruma-dev
 ```
 
-### Option 4: Test Build Locally
+### Option 5: Test Build Locally
 ```bash
 # Run the build test script
 ./build-test.sh
@@ -120,7 +130,7 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # If it passes locally, the issue is with Docker environment
 ```
 
-### Option 5: Debug Docker Build
+### Option 6: Debug Docker Build
 ```bash
 # Build with verbose output
 docker build --no-cache --progress=plain -t pocketledger .
