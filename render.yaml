@@ -200,8 +200,7 @@ services:
     name: pocketledger-db
     plan: starter
     region: oregon
-    runtime: postgresql
-    startCommand: postgres
+    env: postgres
 
   # =============================================================================
   # REDIS SERVICE
