@@ -201,6 +201,7 @@ services:
     plan: starter
     region: oregon
     runtime: postgresql
+    startCommand: postgres
 
   # =============================================================================
   # REDIS SERVICE
