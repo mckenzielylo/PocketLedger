@@ -35,18 +35,69 @@ error: failed to solve: process "/bin/sh -c npm run build" did not complete succ
 - **Cause:** Build process runs out of memory
 - **Solution:** Use the single-stage Dockerfile which is more memory efficient
 
+### Issue: PHP extensions installation fails
+
+**Error Message:**
+```
+error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pdo pdo_sqlite pdo_mysql pdo_pgsql gd zip intl mbstring bcmath opcache" did not complete successfully: exit code: 1
+```
+
+**Possible Causes & Solutions:**
+
+#### 1. Missing system dependencies
+- **Cause:** Required system packages for PHP extensions are missing
+- **Solution:** Use `Dockerfile.simple` which has minimal dependencies
+
+#### 2. Extension conflicts
+- **Cause:** Installing too many extensions at once causes conflicts
+- **Solution:** Use the simplified Dockerfile that installs extensions separately
+
+#### 3. Alpine package issues
+- **Cause:** Some Alpine packages might be incompatible
+- **Solution:** Try the ultra-simple Dockerfile with minimal extensions
+
+**Possible Causes & Solutions:**
+
+#### 1. Node.js/npm not found
+- **Cause:** The build environment doesn't have Node.js or npm installed
+- **Solution:** Use the single-stage Dockerfile (`Dockerfile.render`) which includes Node.js
+
+#### 2. Missing dependencies
+- **Cause:** Some npm packages failed to install
+- **Solution:** 
+  ```bash
+  # Test locally first
+  ./build-test.sh
+  
+  # Or manually:
+  npm install
+  npm run build
+  ```
+
+#### 3. File permissions issues
+- **Cause:** Docker can't access certain files
+- **Solution:** Check `.dockerignore` and ensure all required files are copied
+
+#### 4. Memory issues during build
+- **Cause:** Build process runs out of memory
+- **Solution:** Use the single-stage Dockerfile which is more memory efficient
+
 ## Quick Fixes
 
 ### Option 1: Use Single-Stage Dockerfile
 ```bash
-# Rename the current Dockerfile
-mv Dockerfile Dockerfile.multi-stage
-
-# Use the single-stage version
-mv Dockerfile.render Dockerfile
+# For Render.com, use one of these:
+# Option A: Dockerfile.render (full features)
+# Option B: Dockerfile.simple (minimal, most reliable)
 ```
 
-### Option 2: Test Build Locally
+### Option 2: Use Ultra-Simple Dockerfile
+```bash
+# Use the minimal version for maximum compatibility
+# In Render.com settings, specify: Dockerfile.simple
+```
+
+### Option 3: Test Build Locally
 ```bash
 # Run the build test script
 ./build-test.sh
@@ -54,7 +105,7 @@ mv Dockerfile.render Dockerfile
 # If it passes locally, the issue is with Docker environment
 ```
 
-### Option 3: Debug Docker Build
+### Option 4: Debug Docker Build
 ```bash
 # Build with verbose output
 docker build --no-cache --progress=plain -t pocketledger .

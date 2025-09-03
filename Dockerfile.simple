@@ -1,6 +1,6 @@
 # =============================================================================
-# Single-stage Dockerfile optimized for Render.com deployment
-# Simplified build process to avoid Node.js build issues
+# Ultra-simple Dockerfile for Render.com deployment
+# Minimal PHP extensions to avoid build conflicts
 # =============================================================================
 
 FROM php:8.2-fpm-alpine
@@ -9,61 +9,44 @@ FROM php:8.2-fpm-alpine
 # SYSTEM DEPENDENCIES
 # =============================================================================
 RUN apk add --no-cache \
-    # Basic utilities
     bash \
     curl \
-    wget \
-    unzip \
     git \
-    # Node.js and npm for asset building
     nodejs \
     npm \
-    # Build tools
     build-base \
-    autoconf \
-    libtool \
-    pkgconfig \
-    # PHP extensions dependencies
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \
     libzip-dev \
-    icu-dev \
-    oniguruma-dev \
     postgresql-dev \
-    sqlite-dev \
-    # Supervisor for process management
     supervisor \
     nginx
 
 # =============================================================================
-# PHP EXTENSIONS
+# PHP EXTENSIONS (Minimal set)
 # =============================================================================
-# Install PHP extensions one by one to avoid conflicts
-RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql pdo_pgsql
-
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd
-
-RUN docker-php-ext-install -j$(nproc) zip intl mbstring bcmath opcache
+    && docker-php-ext-install -j$(nproc) \
+        pdo \
+        pdo_pgsql \
+        gd \
+        zip \
+        mbstring
 
 # =============================================================================
-# COMPOSER INSTALLATION
+# COMPOSER
 # =============================================================================
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # =============================================================================
-# APPLICATION SETUP
+# APPLICATION
 # =============================================================================
 WORKDIR /var/www/html
-
-# Copy application files
 COPY . .
 
-# Install PHP dependencies
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Install Node.js dependencies and build assets
 RUN npm install && npm run build
 
 # =============================================================================
@@ -74,29 +57,17 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
 # =============================================================================
-# NGINX CONFIGURATION
+# NGINX & SUPERVISOR
 # =============================================================================
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/default.conf /etc/nginx/http.d/default.conf
-
-# =============================================================================
-# SUPERVISOR CONFIGURATION
-# =============================================================================
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# =============================================================================
-# ENTRYPOINT
-# =============================================================================
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # =============================================================================
-# EXPOSE PORTS
-# =============================================================================
-EXPOSE 80
-
-# =============================================================================
 # STARTUP
 # =============================================================================
+EXPOSE 80
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
