@@ -122,10 +122,7 @@ services:
           name: pocketledger-redis
           property: port
       - key: REDIS_PASSWORD
-        fromService:
-          type: redis
-          name: pocketledger-redis
-          property: password
+        value: ""
       
       # Queue Settings
       - key: QUEUE_CONNECTION
@@ -204,7 +201,6 @@ services:
     env: postgresql
     plan: starter
     region: oregon
-    ipAllowList: []
 
   # =============================================================================
   # REDIS SERVICE
@@ -213,6 +209,7 @@ services:
     name: pocketledger-redis
     plan: starter
     region: oregon
+    ipAllowList: []
 
   # =============================================================================
   # BACKGROUND WORKER
@@ -322,10 +319,7 @@ services:
           name: pocketledger-redis
           property: port
       - key: REDIS_PASSWORD
-        fromService:
-          type: redis
-          name: pocketledger-redis
-          property: password
+        value: ""
       
       # Queue Settings
       - key: QUEUE_CONNECTION
