@@ -56,6 +56,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Asset URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used by the framework to generate asset URLs. This should
+    | be set to the root of your application so that it is used when running
+    | Artisan tasks.
+    |
+    */
+
+    'asset_url' => env('ASSET_URL', env('APP_URL')),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Force HTTPS
+    |--------------------------------------------------------------------------
+    |
+    | This value determines whether to force HTTPS for all URLs including
+    | asset URLs. This is useful for production environments where you want
+    | to ensure all URLs are served over HTTPS.
+    |
+    */
+
+    'force_https' => env('FORCE_HTTPS', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

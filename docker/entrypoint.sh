@@ -71,6 +71,27 @@ if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:temp-key-for-build" ]; then
     php artisan key:generate --force
 fi
 
+# Configure HTTPS for asset URLs
+echo "🔒 Configuring HTTPS for asset URLs..."
+if [ -z "$APP_URL" ]; then
+    export APP_URL="https://pocketledger.onrender.com"
+    echo "✅ Set APP_URL to $APP_URL"
+fi
+
+# Force HTTPS for asset URLs
+export FORCE_HTTPS=true
+export ASSET_URL="https://pocketledger.onrender.com"
+echo "✅ Enabled FORCE_HTTPS for asset URLs"
+echo "✅ Set ASSET_URL to $ASSET_URL"
+
+# Configure Laravel to use HTTPS for assets
+echo "🔧 Configuring Laravel for HTTPS assets..."
+if php artisan config:cache; then
+    echo "✅ Laravel configuration cached with HTTPS settings"
+else
+    echo "⚠️ Configuration caching failed, continuing..."
+fi
+
 # Run package discovery to ensure all packages are properly registered
 echo "📦 Running package discovery..."
 if php artisan package:discover --ansi; then
