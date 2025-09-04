@@ -30,7 +30,7 @@
             <!-- Account Type -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Account Type</h3>
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none account-type-option" data-type="cash">
                         <input type="radio" name="type" value="cash" class="sr-only" {{ old('type', $account->type) === 'cash' ? 'checked' : '' }}>
                         <div class="flex flex-1">
@@ -71,6 +71,21 @@
                                     </svg>
                                 </div>
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">E-Wallet</span>
+                            </div>
+                        </div>
+                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent account-type-border"></div>
+                    </label>
+                    
+                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-4 shadow-sm focus:outline-none account-type-option" data-type="credit-card">
+                        <input type="radio" name="type" value="credit-card" class="sr-only" {{ old('type', $account->type) === 'credit-card' ? 'checked' : '' }}>
+                        <div class="flex flex-1">
+                            <div class="flex flex-col">
+                                <div class="flex items-center justify-center w-8 h-8 bg-red-100 dark:bg-red-900 rounded-full mb-2">
+                                    <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">Credit Card</span>
                             </div>
                         </div>
                         <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent account-type-border"></div>

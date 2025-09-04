@@ -74,7 +74,7 @@ class AccountController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:cash,bank,e-wallet',
+            'type' => 'required|in:cash,bank,e-wallet,credit-card',
             'currency' => 'required|string|max:3',
             'starting_balance' => 'required|numeric|min:0',
             'note' => 'nullable|string|max:1000',
@@ -131,7 +131,7 @@ class AccountController extends Controller
         
         $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:cash,bank,e-wallet',
+            'type' => 'required|in:cash,bank,e-wallet,credit-card',
             'currency' => 'required|string|max:3',
             'note' => 'nullable|string|max:1000',
         ]);
