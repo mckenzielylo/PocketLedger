@@ -237,7 +237,7 @@ echo "🌐 Configuring Nginx for port ${PORT:-80}..."
 PORT_VALUE=${PORT:-80}
 echo "🔧 Setting Nginx to listen on port $PORT_VALUE"
 
-# Create a new Nginx configuration file with the correct port
+# Create a simplified Nginx configuration file with the correct port
 cat > /etc/nginx/http.d/default.conf << EOF
 server {
     listen $PORT_VALUE;
@@ -255,14 +255,11 @@ server {
 
     # Client settings
     client_max_body_size 20M;
-    client_body_timeout 60s;
-    client_header_timeout 60s;
 
     # Gzip
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
-    gzip_proxied expired no-cache no-store private must-revalidate auth;
     gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/javascript;
 
     # Handle Laravel routes
@@ -314,29 +311,40 @@ server {
         return 200 "healthy\n";
         add_header Content-Type text/plain;
     }
-
-    # Rate limiting for login
-    location /login {
-        limit_req zone=login burst=5 nodelay;
-        try_files \$uri \$uri/ /index.php?\$query_string;
-    }
-
-    # Rate limiting for API endpoints
-    location /api {
-        limit_req zone=api burst=10 nodelay;
-        try_files \$uri \$uri/ /index.php?\$query_string;
-    }
 }
 EOF
 
 # Test Nginx configuration
 echo "🧪 Testing Nginx configuration..."
-if nginx -t; then
+if nginx -t 2>&1; then
     echo "✅ Nginx configuration is valid"
 else
     echo "❌ Nginx configuration test failed"
+    echo "📋 Nginx error details:"
+    nginx -t 2>&1
     echo "📋 Nginx configuration content:"
     cat /etc/nginx/http.d/default.conf
+    echo "📋 Available Nginx modules:"
+    nginx -V 2>&1
+    echo "📋 Nginx error log:"
+    cat /var/log/nginx/error.log 2>/dev/null || echo "No error log found"
+fi
+
+# Check if Nginx can start
+echo "🚀 Testing Nginx startup..."
+if timeout 10 nginx -g "daemon off;" & then
+    NGINX_PID=$!
+    sleep 2
+    if kill -0 $NGINX_PID 2>/dev/null; then
+        echo "✅ Nginx started successfully"
+        kill $NGINX_PID
+    else
+        echo "❌ Nginx failed to start"
+        echo "📋 Nginx error log after startup attempt:"
+        cat /var/log/nginx/error.log 2>/dev/null || echo "No error log found"
+    fi
+else
+    echo "❌ Nginx startup test failed"
 fi
 
 # =============================================================================
