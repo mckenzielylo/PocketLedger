@@ -185,3 +185,12 @@ services:
           type: web
           name: pocketledger-web
           property: port
+
+  # =============================================================================
+  # POSTGRESQL DATABASE SERVICE
+  # =============================================================================
+  - type: pserv
+    name: pocketledger-db
+    env: postgres
+    plan: starter
+    ipAllowList: []

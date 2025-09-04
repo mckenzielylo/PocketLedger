@@ -80,6 +80,10 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 - **Cause:** Application not listening on the correct port that Render.com expects
 - **Solution:** Use updated Dockerfiles with PORT environment variable support and dynamic Nginx configuration
 
+#### 10. Database not ready, waiting... error
+- **Cause:** Database service not created or connection parameters incorrect
+- **Solution:** Ensure PostgreSQL service is defined in render.yaml and database connection variables are properly configured
+
 **Possible Causes & Solutions:**
 
 #### 1. Node.js/npm not found
@@ -149,13 +153,21 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # The application will now listen on the correct port for Render.com
 ```
 
-### Option 7: Fix Oniguruma Error
+### Option 7: Fix Database Not Ready Error
+```bash
+# If you get "Database not ready, waiting..." error:
+# 1. Ensure PostgreSQL service is defined in render.yaml
+# 2. Check that database connection variables are properly set
+# 3. Verify the database service is created before the web service
+```
+
+### Option 8: Fix Oniguruma Error
 ```bash
 # If you get "oniguruma package not met" error:
 # Use Dockerfile.minimal which includes oniguruma-dev
 ```
 
-### Option 8: Test Build Locally
+### Option 9: Test Build Locally
 ```bash
 # Run the build test script
 ./build-test.sh
@@ -163,7 +175,7 @@ error: failed to solve: process "/bin/sh -c docker-php-ext-install -j$(nproc) pd
 # If it passes locally, the issue is with Docker environment
 ```
 
-### Option 9: Debug Docker Build
+### Option 10: Debug Docker Build
 ```bash
 # Build with verbose output
 docker build --no-cache --progress=plain -t pocketledger .

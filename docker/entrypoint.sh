@@ -14,14 +14,31 @@ echo "🚀 Starting PocketLedger initialization..."
 # =============================================================================
 if [ "$DB_CONNECTION" = "mysql" ] || [ "$DB_CONNECTION" = "pgsql" ]; then
     echo "⏳ Waiting for database connection..."
+    echo "Database configuration:"
+    echo "  Host: $DB_HOST"
+    echo "  Port: $DB_PORT"
+    echo "  Database: $DB_DATABASE"
+    echo "  Username: $DB_USERNAME"
     
-    # Wait for database to be ready
-    until php artisan migrate:status > /dev/null 2>&1; do
-        echo "Database not ready, waiting..."
-        sleep 2
+    # Wait for database to be ready with timeout
+    MAX_ATTEMPTS=30
+    ATTEMPT=0
+    
+    while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+        if php artisan tinker --execute="DB::connection()->getPdo();" > /dev/null 2>&1; then
+            echo "✅ Database connection established"
+            break
+        else
+            echo "Database not ready, waiting... (attempt $((ATTEMPT + 1))/$MAX_ATTEMPTS)"
+            sleep 5
+            ATTEMPT=$((ATTEMPT + 1))
+        fi
     done
     
-    echo "✅ Database connection established"
+    if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+        echo "⚠️ Database connection timeout after $MAX_ATTEMPTS attempts"
+        echo "Continuing with application startup..."
+    fi
 fi
 
 # =============================================================================
