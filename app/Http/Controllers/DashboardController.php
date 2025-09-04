@@ -85,26 +85,37 @@ class DashboardController extends Controller
      */
     public function reports(): View
     {
-        $user = Auth::user();
-        
-        // Get date range for reports (last 12 months)
-        $endDate = now();
-        $startDate = now()->subMonths(11)->startOfMonth();
-        
-        // Get cashflow data
-        $cashflowData = $this->getCashflowData($user, $startDate, $endDate);
-        
-        // Get category breakdown for current month
-        $categoryBreakdown = $this->getCategoryBreakdown($user, now()->format('Y-m'));
-        
-        // Get net worth data
-        $netWorthData = $this->getNetWorthData($user, $startDate, $endDate);
-        
-        return view('dashboard.reports', compact(
-            'cashflowData',
-            'categoryBreakdown',
-            'netWorthData'
-        ));
+        try {
+            $user = Auth::user();
+            
+            // Get date range for reports (last 12 months)
+            $endDate = now();
+            $startDate = now()->subMonths(11)->startOfMonth();
+            
+            // Get cashflow data
+            $cashflowData = $this->getCashflowData($user, $startDate, $endDate);
+            
+            // Get category breakdown for current month
+            $categoryBreakdown = $this->getCategoryBreakdown($user, now()->format('Y-m'));
+            
+            // Get net worth data
+            $netWorthData = $this->getNetWorthData($user, $startDate, $endDate);
+            
+            return view('dashboard.reports', compact(
+                'cashflowData',
+                'categoryBreakdown',
+                'netWorthData'
+            ));
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Reports page error: ' . $e->getMessage(), [
+                'user_id' => Auth::id(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Return a simple error view or redirect
+            return redirect()->route('dashboard')->with('error', 'Unable to load reports. Please try again later.');
+        }
     }
 
     /**
@@ -112,40 +123,49 @@ class DashboardController extends Controller
      */
     private function getCashflowData($user, $startDate, $endDate): array
     {
-        $months = [];
-        $income = [];
-        $expenses = [];
-        
-        $current = $startDate->copy();
-        
-        while ($current <= $endDate) {
-            $monthKey = $current->format('Y-m');
-            $months[] = $current->format('M Y');
+        try {
+            $months = [];
+            $income = [];
+            $expenses = [];
             
-            $monthStart = $current->startOfMonth();
-            $monthEnd = $current->copy()->endOfMonth();
+            $current = $startDate->copy();
             
-            $monthIncome = $user->transactions()
-                ->where('type', 'income')
-                ->whereBetween('occurred_on', [$monthStart, $monthEnd])
-                ->sum('amount');
+            while ($current <= $endDate) {
+                $monthKey = $current->format('Y-m');
+                $months[] = $current->format('M Y');
                 
-            $monthExpenses = $user->transactions()
-                ->where('type', 'expense')
-                ->whereBetween('occurred_on', [$monthStart, $monthEnd])
-                ->sum('amount');
+                $monthStart = $current->startOfMonth();
+                $monthEnd = $current->copy()->endOfMonth();
+                
+                $monthIncome = $user->transactions()
+                    ->where('type', 'income')
+                    ->whereBetween('occurred_on', [$monthStart, $monthEnd])
+                    ->sum('amount');
+                    
+                $monthExpenses = $user->transactions()
+                    ->where('type', 'expense')
+                    ->whereBetween('occurred_on', [$monthStart, $monthEnd])
+                    ->sum('amount');
+                
+                $income[] = $monthIncome ?? 0;
+                $expenses[] = $monthExpenses ?? 0;
+                
+                $current->addMonth();
+            }
             
-            $income[] = $monthIncome;
-            $expenses[] = $monthExpenses;
-            
-            $current->addMonth();
+            return [
+                'months' => $months,
+                'income' => $income,
+                'expenses' => $expenses,
+            ];
+        } catch (\Exception $e) {
+            \Log::error('Cashflow data error: ' . $e->getMessage());
+            return [
+                'months' => [],
+                'income' => [],
+                'expenses' => [],
+            ];
         }
-        
-        return [
-            'months' => $months,
-            'income' => $income,
-            'expenses' => $expenses,
-        ];
     }
 
     /**
@@ -153,29 +173,34 @@ class DashboardController extends Controller
      */
     private function getCategoryBreakdown($user, $month): array
     {
-        $startDate = $month . '-01';
-        $endDate = date('Y-m-t', strtotime($startDate));
-        
-        $categories = $user->categories()
-            ->where('type', 'expense')
-            ->with(['transactions' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('occurred_on', [$startDate, $endDate]);
-            }])
-            ->get();
-        
-        $data = [];
-        foreach ($categories as $category) {
-            $total = $category->transactions->sum('amount');
-            if ($total > 0) {
-                $data[] = [
-                    'name' => $category->name,
-                    'value' => $total,
-                    'color' => $category->color,
-                ];
+        try {
+            $startDate = $month . '-01';
+            $endDate = date('Y-m-t', strtotime($startDate));
+            
+            $categories = $user->categories()
+                ->where('type', 'expense')
+                ->with(['transactions' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('occurred_on', [$startDate, $endDate]);
+                }])
+                ->get();
+            
+            $data = [];
+            foreach ($categories as $category) {
+                $total = $category->transactions->sum('amount');
+                if ($total > 0) {
+                    $data[] = [
+                        'name' => $category->name,
+                        'value' => $total,
+                        'color' => $category->color,
+                    ];
+                }
             }
+            
+            return $data;
+        } catch (\Exception $e) {
+            \Log::error('Category breakdown error: ' . $e->getMessage());
+            return [];
         }
-        
-        return $data;
     }
 
     /**
@@ -183,45 +208,53 @@ class DashboardController extends Controller
      */
     private function getNetWorthData($user, $startDate, $endDate): array
     {
-        $months = [];
-        $netWorth = [];
-        
-        $current = $startDate->copy();
-        
-        while ($current <= $endDate) {
-            $monthKey = $current->format('Y-m');
-            $months[] = $current->format('M Y');
+        try {
+            $months = [];
+            $netWorth = [];
             
-            $monthEnd = $current->copy()->endOfMonth();
+            $current = $startDate->copy();
             
-            // Get account balances at month end
-            $accountBalances = $user->accounts()
-                ->where('created_at', '<=', $monthEnd)
-                ->get()
-                ->sum('current_balance');
+            while ($current <= $endDate) {
+                $monthKey = $current->format('Y-m');
+                $months[] = $current->format('M Y');
+                
+                $monthEnd = $current->copy()->endOfMonth();
+                
+                // Get account balances at month end
+                $accountBalances = $user->accounts()
+                    ->where('created_at', '<=', $monthEnd)
+                    ->get()
+                    ->sum('current_balance');
+                
+                // Get assets at month end
+                $assetValues = $user->assets()
+                    ->where('created_at', '<=', $monthEnd)
+                    ->get()
+                    ->sum('current_value');
+                
+                // Get debts at month end
+                $debtBalances = $user->debts()
+                    ->where('created_at', '<=', $monthEnd)
+                    ->whereNull('closed_on')
+                    ->get()
+                    ->sum('current_balance');
+                
+                $monthNetWorth = ($accountBalances ?? 0) + ($assetValues ?? 0) - ($debtBalances ?? 0);
+                $netWorth[] = $monthNetWorth;
+                
+                $current->addMonth();
+            }
             
-            // Get assets at month end
-            $assetValues = $user->assets()
-                ->where('created_at', '<=', $monthEnd)
-                ->get()
-                ->sum('current_value');
-            
-            // Get debts at month end
-            $debtBalances = $user->debts()
-                ->where('created_at', '<=', $monthEnd)
-                ->whereNull('closed_on')
-                ->get()
-                ->sum('current_balance');
-            
-            $monthNetWorth = $accountBalances + $assetValues - $debtBalances;
-            $netWorth[] = $monthNetWorth;
-            
-            $current->addMonth();
+            return [
+                'months' => $months,
+                'netWorth' => $netWorth,
+            ];
+        } catch (\Exception $e) {
+            \Log::error('Net worth data error: ' . $e->getMessage());
+            return [
+                'months' => [],
+                'netWorth' => [],
+            ];
         }
-        
-        return [
-            'months' => $months,
-            'netWorth' => $netWorth,
-        ];
     }
 }
