@@ -233,11 +233,111 @@ echo "🌐 Application is ready to serve requests"
 # =============================================================================
 echo "🌐 Configuring Nginx for port ${PORT:-80}..."
 
-# Substitute PORT environment variable in Nginx configuration using sed
-# Replace ${PORT:-80} with the actual PORT value or 80 as default
+# Create Nginx configuration with the correct port
 PORT_VALUE=${PORT:-80}
-sed "s/\${PORT:-80}/$PORT_VALUE/g" /etc/nginx/http.d/default.conf > /tmp/default.conf
-mv /tmp/default.conf /etc/nginx/http.d/default.conf
+echo "🔧 Setting Nginx to listen on port $PORT_VALUE"
+
+# Create a new Nginx configuration file with the correct port
+cat > /etc/nginx/http.d/default.conf << EOF
+server {
+    listen $PORT_VALUE;
+    listen [::]:$PORT_VALUE;
+    server_name _;
+    root /var/www/html/public;
+    index index.php index.html index.htm;
+
+    # Security
+    server_tokens off;
+
+    # Logging
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    # Client settings
+    client_max_body_size 20M;
+    client_body_timeout 60s;
+    client_header_timeout 60s;
+
+    # Gzip
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied expired no-cache no-store private must-revalidate auth;
+    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/javascript;
+
+    # Handle Laravel routes
+    location / {
+        try_files \$uri \$uri/ /index.php?\$query_string;
+    }
+
+    # PHP-FPM configuration
+    location ~ \.php\$ {
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;
+        include fastcgi_params;
+        
+        # FastCGI settings
+        fastcgi_connect_timeout 60s;
+        fastcgi_send_timeout 60s;
+        fastcgi_read_timeout 60s;
+        fastcgi_buffer_size 128k;
+        fastcgi_buffers 4 256k;
+        fastcgi_busy_buffers_size 256k;
+        fastcgi_temp_file_write_size 256k;
+    }
+
+    # Static files caching
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|woff|woff2|ttf|svg)\$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        access_log off;
+    }
+
+    # Deny access to hidden files
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # Deny access to sensitive files
+    location ~* \.(env|log|htaccess|htpasswd|ini|sh|sql|conf)\$ {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # Health check endpoint
+    location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    # Rate limiting for login
+    location /login {
+        limit_req zone=login burst=5 nodelay;
+        try_files \$uri \$uri/ /index.php?\$query_string;
+    }
+
+    # Rate limiting for API endpoints
+    location /api {
+        limit_req zone=api burst=10 nodelay;
+        try_files \$uri \$uri/ /index.php?\$query_string;
+    }
+}
+EOF
+
+# Test Nginx configuration
+echo "🧪 Testing Nginx configuration..."
+if nginx -t; then
+    echo "✅ Nginx configuration is valid"
+else
+    echo "❌ Nginx configuration test failed"
+    echo "📋 Nginx configuration content:"
+    cat /etc/nginx/http.d/default.conf
+fi
 
 # =============================================================================
 # START SERVICES
