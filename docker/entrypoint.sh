@@ -25,7 +25,18 @@ if [ "$DB_CONNECTION" = "mysql" ] || [ "$DB_CONNECTION" = "pgsql" ]; then
     ATTEMPT=0
     
     while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-        if php artisan tinker --execute="DB::connection()->getPdo();" > /dev/null 2>&1; then
+        # Test database connection with a simple query
+        if php -r "
+            try {
+                \$pdo = new PDO('pgsql:host=' . getenv('DB_HOST') . ';port=' . getenv('DB_PORT') . ';dbname=' . getenv('DB_DATABASE'), getenv('DB_USERNAME'), getenv('DB_PASSWORD'));
+                \$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                \$pdo->query('SELECT 1');
+                echo 'connected';
+            } catch (Exception \$e) {
+                echo 'failed: ' . \$e->getMessage();
+                exit(1);
+            }
+        " > /dev/null 2>&1; then
             echo "✅ Database connection established"
             break
         else
@@ -38,6 +49,14 @@ if [ "$DB_CONNECTION" = "mysql" ] || [ "$DB_CONNECTION" = "pgsql" ]; then
     if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
         echo "⚠️ Database connection timeout after $MAX_ATTEMPTS attempts"
         echo "Continuing with application startup..."
+    else
+        # Test if we can run Laravel commands
+        echo "🔍 Testing Laravel database connection..."
+        if php artisan tinker --execute="DB::connection()->getPdo();" > /dev/null 2>&1; then
+            echo "✅ Laravel database connection verified"
+        else
+            echo "⚠️ Laravel database connection failed, but continuing..."
+        fi
     fi
 fi
 
@@ -54,26 +73,43 @@ fi
 
 # Run package discovery to ensure all packages are properly registered
 echo "📦 Running package discovery..."
-php artisan package:discover --ansi || echo "⚠️ Package discovery completed with warnings"
+if php artisan package:discover --ansi; then
+    echo "✅ Package discovery completed successfully"
+else
+    echo "⚠️ Package discovery completed with warnings, continuing..."
+fi
 
 # Optimize autoloader for better performance
 echo "⚡ Optimizing autoloader..."
-composer dump-autoload --optimize --no-dev
+if composer dump-autoload --optimize --no-dev; then
+    echo "✅ Autoloader optimized successfully"
+else
+    echo "⚠️ Autoloader optimization failed, continuing..."
+fi
 
 # Clear and cache configuration
 echo "📝 Optimizing configuration..."
-php artisan config:clear
-php artisan config:cache
+if php artisan config:clear && php artisan config:cache; then
+    echo "✅ Configuration optimized successfully"
+else
+    echo "⚠️ Configuration optimization failed, continuing..."
+fi
 
 # Clear and cache routes
 echo "🛣️ Optimizing routes..."
-php artisan route:clear
-php artisan route:cache
+if php artisan route:clear && php artisan route:cache; then
+    echo "✅ Routes optimized successfully"
+else
+    echo "⚠️ Routes optimization failed, continuing..."
+fi
 
 # Clear and cache views
 echo "👁️ Optimizing views..."
-php artisan view:clear
-php artisan view:cache
+if php artisan view:clear && php artisan view:cache; then
+    echo "✅ Views optimized successfully"
+else
+    echo "⚠️ Views optimization failed, continuing..."
+fi
 
 # =============================================================================
 # DATABASE SETUP
@@ -82,14 +118,29 @@ echo "🗄️ Setting up database..."
 
 # Run migrations
 echo "📊 Running database migrations..."
-php artisan migrate --force
+if php artisan migrate --force; then
+    echo "✅ Database migrations completed successfully"
+else
+    echo "⚠️ Database migrations failed, continuing..."
+fi
 
 # Seed database if in production and no users exist
 if [ "$APP_ENV" = "production" ]; then
-    USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();")
-    if [ "$USER_COUNT" -eq 0 ]; then
-        echo "🌱 Seeding database with initial data..."
-        php artisan db:seed --force
+    echo "🔍 Checking if database needs seeding..."
+    if php artisan tinker --execute="echo App\Models\User::count();" > /dev/null 2>&1; then
+        USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();")
+        if [ "$USER_COUNT" -eq 0 ]; then
+            echo "🌱 Seeding database with initial data..."
+            if php artisan db:seed --force; then
+                echo "✅ Database seeded successfully"
+            else
+                echo "⚠️ Database seeding failed, continuing..."
+            fi
+        else
+            echo "✅ Database already has users, skipping seeding"
+        fi
+    else
+        echo "⚠️ Cannot check user count, skipping seeding"
     fi
 fi
 
