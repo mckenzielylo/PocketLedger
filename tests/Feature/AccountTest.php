@@ -46,6 +46,31 @@ class AccountTest extends TestCase
         ]);
     }
 
+    public function test_user_can_create_credit_card_account(): void
+    {
+        $user = User::factory()->create();
+        
+        $response = $this->actingAs($user)
+            ->post('/accounts', [
+                'name' => 'Test Credit Card',
+                'type' => 'credit-card',
+                'currency' => 'USD',
+                'starting_balance' => 0,
+                'note' => 'Test credit card account'
+            ]);
+            
+        $response->assertRedirect('/accounts');
+        
+        $this->assertDatabaseHas('accounts', [
+            'user_id' => $user->id,
+            'name' => 'Test Credit Card',
+            'type' => 'credit-card',
+            'currency' => 'USD',
+            'starting_balance' => 0,
+            'current_balance' => 0
+        ]);
+    }
+
     public function test_user_can_update_account(): void
     {
         $user = User::factory()->create();

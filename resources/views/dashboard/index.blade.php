@@ -140,6 +140,7 @@
                                                 @if($account->type === 'bank') bg-blue-500
                                                 @elseif($account->type === 'cash') bg-yellow-500
                                                 @elseif($account->type === 'e-wallet') bg-purple-500
+                                                @elseif($account->type === 'credit-card') bg-red-500
                                                 @else bg-gray-500 @endif">
                                                 @if($account->type === 'bank')
                                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,6 +154,10 @@
                                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                                                     </svg>
+                                                @elseif($account->type === 'credit-card')
+                                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                                    </svg>
                                                 @else
                                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
@@ -161,7 +166,13 @@
                                             </div>
                                             <div>
                                                 <h3 class="font-medium text-gray-900 dark:text-white">{{ $account->name }}</h3>
-                                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ ucfirst($account->type) }}</p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                                    @if($account->type === 'credit-card')
+                                                        Credit Card
+                                                    @else
+                                                        {{ ucfirst($account->type) }}
+                                                    @endif
+                                                </p>
                                             </div>
                                         </div>
                                         <div class="text-right">

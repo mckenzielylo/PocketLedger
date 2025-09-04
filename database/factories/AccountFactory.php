@@ -20,7 +20,7 @@ class AccountFactory extends Factory
         return [
             'user_id' => User::factory(),
             'name' => $this->faker->randomElement(['Cash', 'Bank Account', 'Credit Card', 'Savings']),
-            'type' => $this->faker->randomElement(['cash', 'bank', 'e-wallet']),
+            'type' => $this->faker->randomElement(['cash', 'bank', 'e-wallet', 'credit-card']),
             'currency' => 'IDR',
             'starting_balance' => $this->faker->numberBetween(0, 10000000),
             'current_balance' => $this->faker->numberBetween(0, 10000000),

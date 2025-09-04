@@ -49,6 +49,20 @@ class MultiCurrencySampleSeeder extends Seeder
                 'current_balance' => 8000.00,
             ],
             [
+                'name' => 'USD Credit Card',
+                'type' => 'credit-card',
+                'currency' => 'USD',
+                'starting_balance' => 0.00,
+                'current_balance' => 0.00,
+            ],
+            [
+                'name' => 'EUR Credit Card',
+                'type' => 'credit-card',
+                'currency' => 'EUR',
+                'starting_balance' => 0.00,
+                'current_balance' => 0.00,
+            ],
+            [
                 'name' => 'JPY Cash Wallet',
                 'type' => 'cash',
                 'currency' => 'JPY',

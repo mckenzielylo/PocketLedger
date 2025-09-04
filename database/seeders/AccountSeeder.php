@@ -35,6 +35,13 @@ class AccountSeeder extends Seeder
                 'starting_balance' => 5000000,
                 'current_balance' => 5000000,
             ],
+            [
+                'name' => 'Credit Card',
+                'type' => 'credit-card',
+                'currency' => 'IDR',
+                'starting_balance' => 0,
+                'current_balance' => 0,
+            ],
         ];
 
         foreach ($accounts as $accountData) {

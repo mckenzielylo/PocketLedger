@@ -103,7 +103,7 @@
                             <option value="">Select an account</option>
                             @foreach($accounts as $account)
                                 <option value="{{ $account->id }}" {{ old('account_id') == $account->id ? 'selected' : '' }}>
-                                    {{ $account->name }} ({{ $account->type }})
+                                    {{ $account->name }} (@if($account->type === 'credit-card')Credit Card@else{{ ucfirst($account->type) }}@endif)
                                 </option>
                             @endforeach
                         </select>
