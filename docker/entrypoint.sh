@@ -245,20 +245,91 @@ EOF
 cat > /var/www/html/public/db-check.php << 'EOF'
 <?php
 header('Content-Type: application/json');
+
+// Bootstrap Laravel
+require_once __DIR__ . '/../vendor/autoload.php';
+$app = require_once __DIR__ . '/../bootstrap/app.php';
+$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
+
 try {
-    $pdo = new PDO($_ENV['DATABASE_URL']);
+    // Use Laravel's database connection
+    $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
     $stmt = $pdo->query("SELECT conname, pg_get_constraintdef(oid) as definition FROM pg_constraint WHERE conrelid = 'accounts'::regclass AND contype = 'c'");
     $constraints = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Also check if credit-card is supported
+    $testQuery = $pdo->query("SELECT 1 FROM accounts WHERE type = 'credit-card' LIMIT 0");
+    $creditCardSupported = true;
+} catch (Exception $e) {
+    $creditCardSupported = false;
+    $testError = $e->getMessage();
+}
+    
+echo json_encode([
+    'status' => 'success',
+    'constraints' => $constraints ?? [],
+    'credit_card_supported' => $creditCardSupported ?? false,
+    'test_error' => $testError ?? null,
+    'database_type' => config('database.default'),
+    'timestamp' => date('c')
+]);
+EOF
+
+# Create simple database constraint check endpoint (fallback)
+cat > /var/www/html/public/simple-db-check.php << 'EOF'
+<?php
+header('Content-Type: application/json');
+
+// Simple database connection using environment variables
+$host = $_ENV['DB_HOST'] ?? 'localhost';
+$port = $_ENV['DB_PORT'] ?? '5432';
+$database = $_ENV['DB_DATABASE'] ?? 'pocketledger';
+$username = $_ENV['DB_USERNAME'] ?? 'postgres';
+$password = $_ENV['DB_PASSWORD'] ?? '';
+
+try {
+    $dsn = "pgsql:host=$host;port=$port;dbname=$database";
+    $pdo = new PDO($dsn, $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    $stmt = $pdo->query("SELECT conname, pg_get_constraintdef(oid) as definition FROM pg_constraint WHERE conrelid = 'accounts'::regclass AND contype = 'c'");
+    $constraints = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Test credit-card support
+    try {
+        $testQuery = $pdo->query("SELECT 1 FROM accounts WHERE type = 'credit-card' LIMIT 0");
+        $creditCardSupported = true;
+        $testError = null;
+    } catch (Exception $e) {
+        $creditCardSupported = false;
+        $testError = $e->getMessage();
+    }
     
     echo json_encode([
         'status' => 'success',
         'constraints' => $constraints,
+        'credit_card_supported' => $creditCardSupported,
+        'test_error' => $testError,
+        'database_info' => [
+            'host' => $host,
+            'port' => $port,
+            'database' => $database,
+            'username' => $username
+        ],
         'timestamp' => date('c')
     ]);
+    
 } catch (Exception $e) {
     echo json_encode([
         'status' => 'error',
         'message' => $e->getMessage(),
+        'environment_vars' => [
+            'DB_HOST' => $_ENV['DB_HOST'] ?? 'not_set',
+            'DB_PORT' => $_ENV['DB_PORT'] ?? 'not_set',
+            'DB_DATABASE' => $_ENV['DB_DATABASE'] ?? 'not_set',
+            'DB_USERNAME' => $_ENV['DB_USERNAME'] ?? 'not_set',
+            'DB_PASSWORD' => isset($_ENV['DB_PASSWORD']) ? 'set' : 'not_set'
+        ],
         'timestamp' => date('c')
     ]);
 }
