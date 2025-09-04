@@ -172,7 +172,11 @@ chmod -R 775 /var/www/html/bootstrap/cache
 echo "⚡ Setting up queues..."
 
 # Clear failed jobs
-php artisan queue:clear
+if php artisan queue:clear; then
+    echo "✅ Queue cleared successfully"
+else
+    echo "⚠️ Queue clearing failed, continuing..."
+fi
 
 # =============================================================================
 # LOG DIRECTORY SETUP
@@ -213,9 +217,13 @@ EOF
 # =============================================================================
 echo "✨ Final setup..."
 
-# Clear all caches one more time
-php artisan optimize:clear
-php artisan optimize
+# Quick optimization (skip if it fails)
+echo "⚡ Quick application optimization..."
+if php artisan optimize --quiet; then
+    echo "✅ Application optimized successfully"
+else
+    echo "⚠️ Application optimization skipped, continuing..."
+fi
 
 echo "🎉 PocketLedger initialization complete!"
 echo "🌐 Application is ready to serve requests"
