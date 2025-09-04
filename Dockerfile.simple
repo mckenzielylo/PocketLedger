@@ -54,7 +54,11 @@ ENV DB_CONNECTION=pgsql
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
-RUN npm install && npm run build
+
+# Build frontend assets
+RUN npm install --production=false && \
+    npm run build && \
+    npm cache clean --force
 
 # =============================================================================
 # PERMISSIONS

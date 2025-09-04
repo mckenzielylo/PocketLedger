@@ -217,6 +217,39 @@ EOF
 # =============================================================================
 echo "✨ Final setup..."
 
+# Check if assets were built correctly
+echo "📦 Checking frontend assets..."
+if [ -d "/var/www/html/public/build" ]; then
+    echo "✅ Frontend assets found in /var/www/html/public/build"
+    ls -la /var/www/html/public/build/
+    
+    # Check for Vite manifest
+    if [ -f "/var/www/html/public/build/manifest.json" ]; then
+        echo "✅ Vite manifest found"
+        echo "📋 Manifest content:"
+        cat /var/www/html/public/build/manifest.json
+    else
+        echo "❌ Vite manifest not found"
+    fi
+else
+    echo "❌ Frontend assets not found in /var/www/html/public/build"
+    echo "📋 Contents of public directory:"
+    ls -la /var/www/html/public/
+    
+    # Check if there are any build artifacts
+    echo "📋 Checking for any build artifacts:"
+    find /var/www/html -name "*.css" -o -name "*.js" | head -10
+    
+    # Try to rebuild assets if they're missing
+    echo "🔧 Attempting to rebuild frontend assets..."
+    if npm run build; then
+        echo "✅ Frontend assets rebuilt successfully"
+        ls -la /var/www/html/public/build/ 2>/dev/null || echo "Build directory still not found"
+    else
+        echo "❌ Failed to rebuild frontend assets"
+    fi
+fi
+
 # Quick optimization (skip if it fails)
 echo "⚡ Quick application optimization..."
 if php artisan optimize --quiet; then
