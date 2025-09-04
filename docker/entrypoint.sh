@@ -233,8 +233,10 @@ echo "🌐 Application is ready to serve requests"
 # =============================================================================
 echo "🌐 Configuring Nginx for port ${PORT:-80}..."
 
-# Substitute PORT environment variable in Nginx configuration
-envsubst '${PORT}' < /etc/nginx/http.d/default.conf > /tmp/default.conf
+# Substitute PORT environment variable in Nginx configuration using sed
+# Replace ${PORT:-80} with the actual PORT value or 80 as default
+PORT_VALUE=${PORT:-80}
+sed "s/\${PORT:-80}/$PORT_VALUE/g" /etc/nginx/http.d/default.conf > /tmp/default.conf
 mv /tmp/default.conf /etc/nginx/http.d/default.conf
 
 # =============================================================================
