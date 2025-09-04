@@ -15,19 +15,27 @@ return new class extends Migration
         // Check if the accounts table exists and has the type column
         if (Schema::hasTable('accounts') && Schema::hasColumn('accounts', 'type')) {
             try {
-                // First, check what the current enum values are
-                $result = DB::select("SHOW COLUMNS FROM accounts LIKE 'type'");
-                if (!empty($result)) {
-                    $type = $result[0]->Type;
-                    
-                    // Only modify if credit-card is not already in the enum
-                    if (strpos($type, 'credit-card') === false) {
-                        DB::statement("ALTER TABLE accounts MODIFY COLUMN type ENUM('cash', 'bank', 'e-wallet', 'credit-card') NOT NULL");
+                // For PostgreSQL, we need to update the check constraint
+                if (config('database.default') === 'pgsql') {
+                    // Drop the existing constraint
+                    DB::statement("ALTER TABLE accounts DROP CONSTRAINT IF EXISTS accounts_type_check");
+                    // Add the new constraint with credit-card
+                    DB::statement("ALTER TABLE accounts ADD CONSTRAINT accounts_type_check CHECK (type IN ('cash', 'bank', 'e-wallet', 'credit-card'))");
+                } else {
+                    // For MySQL, use the original enum approach
+                    $result = DB::select("SHOW COLUMNS FROM accounts LIKE 'type'");
+                    if (!empty($result)) {
+                        $type = $result[0]->Type;
+                        
+                        // Only modify if credit-card is not already in the enum
+                        if (strpos($type, 'credit-card') === false) {
+                            DB::statement("ALTER TABLE accounts MODIFY COLUMN type ENUM('cash', 'bank', 'e-wallet', 'credit-card') NOT NULL");
+                        }
                     }
                 }
             } catch (\Exception $e) {
                 // Log the error but don't fail the migration
-                \Log::warning('Failed to add credit-card to accounts type enum: ' . $e->getMessage());
+                \Log::warning('Failed to add credit-card to accounts type constraint: ' . $e->getMessage());
             }
         }
     }
@@ -37,7 +45,17 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Revert back to original enum values
-        DB::statement("ALTER TABLE accounts MODIFY COLUMN type ENUM('cash', 'bank', 'e-wallet') NOT NULL");
+        try {
+            if (config('database.default') === 'pgsql') {
+                // For PostgreSQL, update the check constraint to remove credit-card
+                DB::statement("ALTER TABLE accounts DROP CONSTRAINT IF EXISTS accounts_type_check");
+                DB::statement("ALTER TABLE accounts ADD CONSTRAINT accounts_type_check CHECK (type IN ('cash', 'bank', 'e-wallet'))");
+            } else {
+                // For MySQL, use the original enum approach
+                DB::statement("ALTER TABLE accounts MODIFY COLUMN type ENUM('cash', 'bank', 'e-wallet') NOT NULL");
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Failed to remove credit-card from accounts type constraint: ' . $e->getMessage());
+        }
     }
 };
