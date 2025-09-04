@@ -16,15 +16,42 @@ class AccountController extends Controller
      */
     public function index(): View
     {
-        $user = Auth::user();
-        
-        $accounts = $user->accounts()
-            ->withCount(['transactions', 'transferTransactions'])
-            ->orderBy('is_archived')
-            ->orderBy('name')
-            ->get();
+        try {
+            $user = Auth::user();
             
-        return view('accounts.index', compact('accounts'));
+            // Check if user exists
+            if (!$user) {
+                \Log::error('No authenticated user found');
+                return redirect()->route('login')->with('error', 'Please log in to access accounts.');
+            }
+            
+            // Try to get accounts with error handling
+            try {
+                $accounts = $user->accounts()
+                    ->withCount(['transactions', 'transferTransactions'])
+                    ->orderBy('is_archived')
+                    ->orderBy('name')
+                    ->get();
+            } catch (\Exception $e) {
+                \Log::error('Database query error in accounts: ' . $e->getMessage());
+                // Fallback to simple query without withCount
+                $accounts = $user->accounts()
+                    ->orderBy('is_archived')
+                    ->orderBy('name')
+                    ->get();
+            }
+                
+            return view('accounts.index', compact('accounts'));
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Accounts page error: ' . $e->getMessage(), [
+                'user_id' => Auth::id(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Return a simple error view or redirect
+            return redirect()->route('dashboard')->with('error', 'Unable to load accounts. Please try again later.');
+        }
     }
 
     /**
@@ -32,7 +59,12 @@ class AccountController extends Controller
      */
     public function create(): View
     {
-        return view('accounts.create');
+        try {
+            return view('accounts.create');
+        } catch (\Exception $e) {
+            \Log::error('Accounts create page error: ' . $e->getMessage());
+            return redirect()->route('accounts.index')->with('error', 'Unable to load create account page. Please try again later.');
+        }
     }
 
     /**
