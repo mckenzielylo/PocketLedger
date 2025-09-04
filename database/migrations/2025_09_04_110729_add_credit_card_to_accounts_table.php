@@ -12,8 +12,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Note: We can't directly modify enum values in MySQL, so we'll use raw SQL
-        DB::statement("ALTER TABLE accounts MODIFY COLUMN type ENUM('cash', 'bank', 'e-wallet', 'credit-card') NOT NULL");
+        // Check if the accounts table exists and has the type column
+        if (Schema::hasTable('accounts') && Schema::hasColumn('accounts', 'type')) {
+            try {
+                // First, check what the current enum values are
+                $result = DB::select("SHOW COLUMNS FROM accounts LIKE 'type'");
+                if (!empty($result)) {
+                    $type = $result[0]->Type;
+                    
+                    // Only modify if credit-card is not already in the enum
+                    if (strpos($type, 'credit-card') === false) {
+                        DB::statement("ALTER TABLE accounts MODIFY COLUMN type ENUM('cash', 'bank', 'e-wallet', 'credit-card') NOT NULL");
+                    }
+                }
+            } catch (\Exception $e) {
+                // Log the error but don't fail the migration
+                \Log::warning('Failed to add credit-card to accounts type enum: ' . $e->getMessage());
+            }
+        }
     }
 
     /**

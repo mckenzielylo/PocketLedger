@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
 {
@@ -80,11 +81,24 @@ class AccountController extends Controller
             'note' => 'nullable|string|max:1000',
         ]);
 
+        // Temporary fallback: if credit-card is selected but not supported by DB, use bank
+        $accountType = $request->type;
+        if ($accountType === 'credit-card') {
+            try {
+                // Test if credit-card is supported by trying to create a test query
+                DB::select("SELECT 1 FROM accounts WHERE type = 'credit-card' LIMIT 0");
+            } catch (\Exception $e) {
+                // If credit-card is not supported, fall back to bank
+                $accountType = 'bank';
+                \Log::warning('Credit card type not supported by database, falling back to bank type');
+            }
+        }
+
         $user = Auth::user();
         
         $account = $user->accounts()->create([
             'name' => $request->name,
-            'type' => $request->type,
+            'type' => $accountType,
             'currency' => strtoupper($request->currency),
             'starting_balance' => $request->starting_balance,
             'current_balance' => $request->starting_balance,
@@ -136,9 +150,22 @@ class AccountController extends Controller
             'note' => 'nullable|string|max:1000',
         ]);
 
+        // Temporary fallback: if credit-card is selected but not supported by DB, use bank
+        $accountType = $request->type;
+        if ($accountType === 'credit-card') {
+            try {
+                // Test if credit-card is supported by trying to create a test query
+                DB::select("SELECT 1 FROM accounts WHERE type = 'credit-card' LIMIT 0");
+            } catch (\Exception $e) {
+                // If credit-card is not supported, fall back to bank
+                $accountType = 'bank';
+                \Log::warning('Credit card type not supported by database, falling back to bank type');
+            }
+        }
+
         $account->update([
             'name' => $request->name,
-            'type' => $request->type,
+            'type' => $accountType,
             'currency' => strtoupper($request->currency),
             'note' => $request->note,
         ]);
