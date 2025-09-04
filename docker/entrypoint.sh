@@ -145,6 +145,14 @@ else
     echo "⚠️ Database migrations failed, continuing..."
 fi
 
+# Fix credit card constraint for PostgreSQL
+echo "🔧 Fixing credit card constraint..."
+if php artisan db:fix-credit-card-constraint; then
+    echo "✅ Credit card constraint fixed successfully"
+else
+    echo "⚠️ Credit card constraint fix failed, continuing..."
+fi
+
 # Seed database if in production and no users exist
 if [ "$APP_ENV" = "production" ]; then
     echo "🔍 Checking if database needs seeding..."
@@ -231,6 +239,29 @@ echo json_encode([
     'timestamp' => date('c'),
     'version' => '1.0.0'
 ]);
+EOF
+
+# Create database constraint check endpoint
+cat > /var/www/html/public/db-check.php << 'EOF'
+<?php
+header('Content-Type: application/json');
+try {
+    $pdo = new PDO($_ENV['DATABASE_URL']);
+    $stmt = $pdo->query("SELECT conname, pg_get_constraintdef(oid) as definition FROM pg_constraint WHERE conrelid = 'accounts'::regclass AND contype = 'c'");
+    $constraints = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    echo json_encode([
+        'status' => 'success',
+        'constraints' => $constraints,
+        'timestamp' => date('c')
+    ]);
+} catch (Exception $e) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => $e->getMessage(),
+        'timestamp' => date('c')
+    ]);
+}
 EOF
 
 # =============================================================================
