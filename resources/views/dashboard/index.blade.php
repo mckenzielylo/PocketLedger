@@ -1,7 +1,6 @@
-<x-app-layout>
-    <x-slot name="header">
-        {{ __('Dashboard') }}
-    </x-slot>
+@extends('layouts.app', ['currentPage' => 'dashboard'])
+
+@section('content')
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
@@ -321,3 +320,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+@endsection

@@ -1,9 +1,6 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-text-primary leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app', ['currentPage' => 'profile'])
+
+@section('content')
 
     <div class="py-6">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6" x-data="{ openSection: null }">
@@ -142,4 +139,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

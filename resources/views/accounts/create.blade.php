@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['currentPage' => 'add'])
 
 @section('content')
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
