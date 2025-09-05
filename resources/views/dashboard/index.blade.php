@@ -288,7 +288,6 @@
             </div>
         </div>
     </div>
-</x-app-layout>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
