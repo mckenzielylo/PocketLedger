@@ -1,27 +1,12 @@
 @extends('layouts.app', ['currentPage' => 'accounts'])
 
 @section('content')
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Header -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div class="px-4 py-4 sm:px-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Accounts</h1>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage your bank accounts, cash, and e-wallets</p>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <a href="{{ route('accounts.create') }}" 
-                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        Add Account
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+<x-page-layout 
+    :title="'Accounts'" 
+    :description="'Manage your bank accounts, cash, and e-wallets'"
+    :icon="'<svg class=\"w-6 h-6 text-primary\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z\"></path></svg>'"
+    :actions="'<a href=\"' . route('accounts.create') . '\" class=\"inline-flex items-center px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md text-sm font-medium\"><svg class=\"-ml-1 mr-2 h-5 w-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 6v6m0 0v6m0-6h6m-6 0H6\"></path></svg>Add Account</a>'"
+>
 
     <!-- Information Section -->
     @if(Auth::user()->settings['default_account_id'])
@@ -49,11 +34,11 @@
     @endif
 
     <!-- Account List -->
-    <div class="px-4 py-6 sm:px-6">
-        @if($accounts->count() > 0)
-            <div class="space-y-4">
-                @foreach($accounts as $account)
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    @if($accounts->count() > 0)
+        <div class="space-y-4">
+            @foreach($accounts as $account)
+                <x-ui.card>
+                    <x-ui.card-content class="p-6">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 <!-- Account Type Icon -->
@@ -172,38 +157,43 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <!-- Empty State -->
-            <div class="text-center py-12">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    </x-ui.card-content>
+                </x-ui.card>
+            @endforeach
+        </div>
+    @else
+        <!-- Empty State -->
+        <x-ui.card>
+            <x-ui.card-content class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No accounts</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating your first account.</p>
+                <h3 class="mt-2 text-sm font-medium text-foreground">No accounts</h3>
+                <p class="mt-1 text-sm text-muted-foreground">Get started by creating your first account.</p>
                 <div class="mt-6">
-                    <a href="{{ route('accounts.create') }}" 
-                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                    <x-ui.button tag="a" href="{{ route('accounts.create') }}">
                         <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
                         Add Account
-                    </a>
+                    </x-ui.button>
                 </div>
-            </div>
-        @endif
-    </div>
-</div>
+            </x-ui.card-content>
+        </x-ui.card>
+    @endif
+</x-page-layout>
 
 <!-- Floating Action Button -->
 <div class="fixed bottom-20 right-4 z-50">
-    <a href="{{ route('accounts.create') }}" 
-       class="w-14 h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg flex items-center justify-center transition-colors duration-200">
+    <x-ui.button 
+        tag="a" 
+        href="{{ route('accounts.create') }}" 
+        size="icon"
+        class="w-14 h-14 rounded-full shadow-lg"
+    >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
         </svg>
-    </a>
+    </x-ui.button>
 </div>
 @endsection

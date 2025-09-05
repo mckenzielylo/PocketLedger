@@ -67,19 +67,8 @@
         <!-- Navigation -->
         @include('layouts.navigation')
 
-        <!-- Page Heading -->
-        @if (isset($header))
-            <header class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-                        {{ $header }}
-                    </h1>
-                </div>
-            </header>
-        @endif
-
         <!-- Page Content -->
-        <main class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <main class="min-h-screen">
             @hasSection('content')
                 @yield('content')
             @else
@@ -91,7 +80,7 @@
         <x-bottom-navigation :current-page="$currentPage ?? ''" />
 
         <!-- Footer -->
-        <footer class="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
+        <footer class="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between">
                     <div class="text-gray-600 dark:text-gray-400 text-sm">

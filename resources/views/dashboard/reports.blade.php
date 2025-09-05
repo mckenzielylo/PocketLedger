@@ -1,77 +1,77 @@
 @extends('layouts.app', ['currentPage' => 'reports'])
 
 @section('content')
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Header -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('dashboard') }}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                        </svg>
-                    </a>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Reports & Analytics</h1>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Financial insights and trends</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <!-- Cashflow Chart -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Cashflow (Last 12 Months)</h3>
+<x-page-layout 
+    :title="'Reports & Analytics'" 
+    :description="'Financial insights and trends'"
+    :icon="'<svg class=\"w-6 h-6 text-primary\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z\"></path></svg>'"
+    :breadcrumbs="'<a href=\"' . route('dashboard') . '\" class=\"text-muted-foreground hover:text-foreground\">Dashboard</a> / <span class=\"text-foreground\">Reports</span>'"
+>
+    <!-- Cashflow Chart -->
+    <x-ui.card class="mb-6">
+        <x-ui.card-header>
+            <x-ui.card-title>Cashflow (Last 12 Months)</x-ui.card-title>
+        </x-ui.card-header>
+        <x-ui.card-content>
             <div class="h-64">
                 <canvas id="cashflowChart"></canvas>
             </div>
-        </div>
+        </x-ui.card-content>
+    </x-ui.card>
 
-        <!-- Category Breakdown Chart -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Category Breakdown ({{ now()->format('M Y') }})</h3>
+    <!-- Category Breakdown Chart -->
+    <x-ui.card class="mb-6">
+        <x-ui.card-header>
+            <x-ui.card-title>Category Breakdown ({{ now()->format('M Y') }})</x-ui.card-title>
+        </x-ui.card-header>
+        <x-ui.card-content>
             <div class="h-64">
                 <canvas id="categoryChart"></canvas>
             </div>
-        </div>
+        </x-ui.card-content>
+    </x-ui.card>
 
-        <!-- Net Worth Chart -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Net Worth Trend (Last 12 Months)</h3>
+    <!-- Net Worth Chart -->
+    <x-ui.card class="mb-6">
+        <x-ui.card-header>
+            <x-ui.card-title>Net Worth Trend (Last 12 Months)</x-ui.card-title>
+        </x-ui.card-header>
+        <x-ui.card-content>
             <div class="h-64">
                 <canvas id="netWorthChart"></canvas>
             </div>
-        </div>
+        </x-ui.card-content>
+    </x-ui.card>
 
-        <!-- Export Options -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Export Data</h3>
+    <!-- Export Options -->
+    <x-ui.card>
+        <x-ui.card-header>
+            <x-ui.card-title>Export Data</x-ui.card-title>
+        </x-ui.card-header>
+        <x-ui.card-content>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <a href="#" class="flex items-center justify-center p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
-                    <svg class="w-6 h-6 mr-2 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <x-ui.button variant="outline" class="flex items-center justify-center p-4 h-auto">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    <span class="text-gray-700 dark:text-gray-300 font-medium">Export Transactions</span>
-                </a>
-                <a href="#" class="flex items-center justify-center p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
-                    <svg class="w-6 h-6 mr-2 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    Export Transactions
+                </x-ui.button>
+                <x-ui.button variant="outline" class="flex items-center justify-center p-4 h-auto">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    <span class="text-gray-700 dark:text-gray-300 font-medium">Export Assets</span>
-                </a>
-                <a href="#" class="flex items-center justify-center p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
-                    <svg class="w-6 h-6 mr-2 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    Export Assets
+                </x-ui.button>
+                <x-ui.button variant="outline" class="flex items-center justify-center p-4 h-auto">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    <span class="text-gray-700 dark:text-gray-300 font-medium">Export Debts</span>
-                </a>
+                    Export Debts
+                </x-ui.button>
             </div>
-        </div>
-    </div>
+        </x-ui.card-content>
+    </x-ui.card>
+</x-page-layout>
 
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
