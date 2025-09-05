@@ -73,12 +73,10 @@
         </div>
     </div>
 
-@endsection
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
+    <script>
 // Cashflow Chart
 const cashflowCtx = document.getElementById('cashflowChart').getContext('2d');
 new Chart(cashflowCtx, {
