@@ -51,10 +51,33 @@
                                             </svg>
                                         </div>
                                     @elseif($transaction->type === 'expense')
-                                        <div class="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
-                                            <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
-                                            </svg>
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center
+                                            @if($transaction->account->type === 'credit-card') bg-red-100 dark:bg-red-900
+                                            @elseif($transaction->account->type === 'bank') bg-blue-100 dark:bg-blue-900
+                                            @elseif($transaction->account->type === 'cash') bg-yellow-100 dark:bg-yellow-900
+                                            @elseif($transaction->account->type === 'e-wallet') bg-purple-100 dark:bg-purple-900
+                                            @else bg-red-100 dark:bg-red-900 @endif">
+                                            @if($transaction->account->type === 'credit-card')
+                                                <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                                </svg>
+                                            @elseif($transaction->account->type === 'bank')
+                                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                                </svg>
+                                            @elseif($transaction->account->type === 'cash')
+                                                <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                                </svg>
+                                            @elseif($transaction->account->type === 'e-wallet')
+                                                <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                                </svg>
+                                            @else
+                                                <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
+                                                </svg>
+                                            @endif
                                         </div>
                                     @else
                                         <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
@@ -79,9 +102,29 @@
                                     </div>
                                     <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
                                         <span>{{ $transaction->account->name }}</span>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium 
+                                            @if($transaction->account->type === 'bank') bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200
+                                            @elseif($transaction->account->type === 'cash') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
+                                            @elseif($transaction->account->type === 'e-wallet') bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200
+                                            @elseif($transaction->account->type === 'credit-card') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
+                                            @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 @endif">
+                                            @if($transaction->account->type === 'credit-card') Credit Card
+                                            @else {{ ucfirst($transaction->account->type) }}
+                                            @endif
+                                        </span>
                                         @if($transaction->transferAccount)
                                             <span>→</span>
                                             <span>{{ $transaction->transferAccount->name }}</span>
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium 
+                                                @if($transaction->transferAccount->type === 'bank') bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200
+                                                @elseif($transaction->transferAccount->type === 'cash') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
+                                                @elseif($transaction->transferAccount->type === 'e-wallet') bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200
+                                                @elseif($transaction->transferAccount->type === 'credit-card') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
+                                                @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 @endif">
+                                                @if($transaction->transferAccount->type === 'credit-card') Credit Card
+                                                @else {{ ucfirst($transaction->transferAccount->type) }}
+                                                @endif
+                                            </span>
                                         @endif
                                         @if($transaction->category && $transaction->type !== 'transfer')
                                             <span>•</span>
@@ -95,11 +138,11 @@
                             </div>
                             
                             <!-- Amount -->
-                            <div class="flex-shrink-0 text-right">
-                                <p class="text-lg font-semibold {{ $transaction->type === 'income' ? 'text-green-600 dark:text-green-400' : ($transaction->type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400') }}">
+                            <div class="flex-shrink-0 text-right min-w-0">
+                                <p class="text-lg font-semibold {{ $transaction->type === 'income' ? 'text-green-600 dark:text-green-400' : ($transaction->type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400') }} break-words">
                                     {{ $transaction->type === 'expense' ? '-' : '' }}{{ $transaction->account->currency_symbol }} {{ number_format($transaction->amount, 0, ',', '.') }}
                                 </p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $transaction->account->currency }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 break-words">{{ $transaction->account->currency }}</p>
                             </div>
                         </div>
                         
